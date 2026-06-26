@@ -107,6 +107,8 @@
   .segc{display:flex;gap:6px;background:var(--bg);border:1px solid var(--sep);border-radius:11px;padding:4px}
   .segc button{flex:1;font:inherit;font-size:13px;color:var(--label-2);background:transparent;border:0;border-radius:8px;padding:9px;cursor:pointer}
   .segc button.on{background:var(--blue);color:#fff;font-weight:600}
+  .frow2{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .frow2 span{font-size:13px;color:var(--label)}
   .lnote{font-size:11px;color:var(--label-3);margin:0 0 10px}
   .lrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--sep)}
   .lrow:last-child{border-bottom:0}
@@ -166,6 +168,13 @@
       <div class="lab">Min ground speed <span id="gsVal">5 kt</span></div>
       <input type="range" id="gsIn" min="0" max="30" step="1" value="5" />
       <p class="hint">Hide stationary aircraft — parked or idling planes that broadcast bad altitude data. Set to 0 to also show hovering helicopters.</p>
+      <div class="frow2"><span>Airline traffic only</span><label class="lsw"><input type="checkbox" id="airlinersIn"><span class="sl"></span></label></div>
+      <p class="hint">Show only scheduled carrier aircraft — turboprops, regional jets, and jetliners. Hides local private planes.</p>
+      <div class="frow2"><span>Include helicopters</span><label class="lsw"><input type="checkbox" id="helisIn"><span class="sl"></span></label></div>
+      <p class="hint">When airline-only is on, also keep helicopters (medevac, news, police, military).</p>
+      <div class="lab" style="margin-top:14px">Max altitude <span id="altVal">Off</span></div>
+      <input type="range" id="altIn" min="0" max="45000" step="1000" value="0" />
+      <p class="hint">Hide aircraft above this height — useful for high overflights in Overhead mode. Off = no limit.</p>
     </div>
   </div>
 
@@ -229,14 +238,19 @@ const TILE_HTML={
   lastseen:`<div class="cap">Last seen</div><div class="t-center"><div class="last-txt" id="lastSeen">—</div></div>`
 };
 
+const COMMERCIAL_TYPES=new Set(["B731","B732","B733","B734","B735","B736","B737","B738","B739","B73J","B38M","B39M","B3XM","B712","B722","B752","B753","B762","B763","B764","B772","B773","B77L","B77W","B788","B789","B78X","A318","A319","A320","A321","A19N","A20N","A21N","A306","A310","A332","A333","A338","A339","A342","A343","A345","A346","A359","A35K","A388","MD81","MD82","MD83","MD87","MD88","MD90","B462","B463","RJ85","RJ1H","E135","E145","E45X","E170","E75S","E75L","E175","E190","E195","E290","E295","CRJ1","CRJ2","CRJ7","CRJ9","CRJX","SU95","DH8A","DH8B","DH8C","DH8D","AT43","AT45","AT72","AT73","AT75","AT76","SF34","B190","JS31","JS41","E110","E120","SW4","D328","ATP"]);
+function airlineCallsign(cs,reg){ cs=(cs||"").trim().toUpperCase(); if(!cs) return false; if(reg&&cs===String(reg).toUpperCase()) return false; return /^[A-Z]{3}[0-9]/.test(cs); }
+function isCommercial(type,cs,reg){ return airlineCallsign(cs,reg) || COMMERCIAL_TYPES.has((type||"").toUpperCase()); }
+
 const ALT_FLOOR=50;
 
 const state={ lat:37.468, lon:-122.141, mode:"starting", displayedDist:null, dim:false,
   rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null, layout:null,
-  orient:"auto", gsFloor:5, distMode:"ground" };
+  orient:"auto", gsFloor:5, distMode:"ground", airlinersOnly:false, inclHelis:false, maxAlt:0 };
 state.lat=store.get("lat",state.lat); state.lon=store.get("lon",state.lon);
 state.rangeFt=store.get("rangeFt",state.rangeFt); state.proxy=store.get("proxy",""); state.dim=store.get("dim",false);
 state.orient=store.get("orient","auto"); state.gsFloor=store.get("gsFloor",5); state.distMode=store.get("distMode","ground");
+state.airlinersOnly=store.get("airlinersOnly",false); state.inclHelis=store.get("inclHelis",false); state.maxAlt=store.get("maxAlt",0);
 
 function reconcileLayout(saved){
   const def={l:DEFAULT_L,p:DEFAULT_P}, out={};
@@ -297,8 +311,9 @@ function setLogo(p){ const box=$("logo"); if(!box) return; box.innerHTML="";
   else fb();
 }
 function craftLabel(p){
-  if(p.cat==="A7"||/helicopter|rotor/i.test(p.desc||"")) return "Helicopter"+(p.type?" · "+p.type:"");
-  return p.desc||p.type||"";
+  let s=(p.cat==="A7"||/helicopter|rotor/i.test(p.desc||"")) ? "Helicopter"+(p.type?" · "+p.type:"") : (p.desc||p.type||"");
+  if(p.mil) s="Military"+(s?" · "+s:"");
+  return s;
 }
 
 let heading=0, haveCompass=false, needsTap=false, pendingFrame=false;
@@ -366,7 +381,7 @@ function render(p){
   setLogo(p);
   softSet($("codes"),()=>{ const o=$("origin"),d=$("dest"); if(o)o.textContent=p.originIata||"???"; if(d)d.textContent=p.destIata||"???"; });
   softSet($("ends"),()=>{ const a=$("originName"),b=$("destName"),c=$("originCity"),e=$("destCity");
-    if(a)a.textContent=p.originName||(p.originIata?"":"Route unavailable"); if(b)b.textContent=p.destName||""; if(c)c.textContent=p.originCity||""; if(e)e.textContent=p.destCity||""; });
+    if(a)a.textContent=p.originName||(p.routeSuspect?"Route unverified":(p.originIata?"":"Route unavailable")); if(b)b.textContent=p.destName||""; if(c)c.textContent=p.originCity||""; if(e)e.textContent=p.destCity||""; });
   showDistance(distMetric(p));
   const al=$("alt"); if(al) al.textContent=p.altFt?commas(p.altFt)+" ft":"—";
   const oh=$("ohead"); if(oh){ const g=groundFeet(p); if(g<3000){ oh.textContent="YES"; oh.classList.add("overhead"); } else { oh.textContent=(g/5280).toFixed(1)+" mi"; oh.classList.remove("overhead"); } }
@@ -413,6 +428,12 @@ async function fetchLive(){
     if(Number.isFinite(geom) && geom<ALT_FLOOR) continue;                 // GPS altitude says it's on the ground
     const altFt=Number.isFinite(baro)?baro:(Number.isFinite(geom)?geom:null);
     if(altFt==null || altFt<ALT_FLOOR) continue;                          // no usable / too-low altitude
+    if(state.maxAlt>0 && altFt>state.maxAlt) continue;                    // optional altitude ceiling
+    const isHeli=a.category==="A7";
+    if(state.airlinersOnly){                                             // dual-factor commercial filter
+      if(isHeli){ if(!state.inclHelis) continue; }
+      else if(!isCommercial(a.t,a.flight,a.r)) continue;
+    }
     const ground=groundFeet({lat:a.lat,lon:a.lon}), slant=slantFeet({lat:a.lat,lon:a.lon,altFt});
     const metric=state.distMode==="ground"?ground:slant;
     if(metric>state.rangeFt) continue;
@@ -424,13 +445,24 @@ async function fetchLive(){
   const c=cands[0], a=c.a;
   const plane={callsign:(a.flight||"").trim(),lat:a.lat,lon:a.lon,altFt:c.altFt,
     track:(typeof a.track==="number"?a.track:(typeof a.true_heading==="number"?a.true_heading:null)),
-    cat:a.category,type:(a.t||"").toString(),desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString()};
+    cat:a.category,type:(a.t||"").toString(),desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString(),
+    mil:(Number(a.dbFlags)&1)===1};
   if(plane.callsign){ try{ await sleep(1100);
     const j=await getJSON(`https://api.adsbdb.com/v0/callsign/${encodeURIComponent(plane.callsign)}`);
     const fr=j?.response?.flightroute; if(fr){
       if(fr.airline){plane.airlineName=fr.airline.name;plane.airlineIata=fr.airline.iata;plane.airlineIcao=fr.airline.icao;}
-      if(fr.origin){plane.originIata=fr.origin.iata_code;plane.originName=fr.origin.name;plane.originCity=fr.origin.municipality;}
-      if(fr.destination){plane.destIata=fr.destination.iata_code;plane.destName=fr.destination.name;plane.destCity=fr.destination.municipality;}
+      if(fr.origin && fr.destination){
+        const o=fr.origin, d=fr.destination; let ok=true;
+        if(Number.isFinite(o.latitude)&&Number.isFinite(d.latitude)){
+          const dPO=haversineMeters(plane.lat,plane.lon,o.latitude,o.longitude),
+                dPD=haversineMeters(plane.lat,plane.lon,d.latitude,d.longitude),
+                dOD=haversineMeters(o.latitude,o.longitude,d.latitude,d.longitude);
+          ok = (dPO+dPD) <= (dOD*1.4 + 150000);   // plane must sit on/near the origin→dest corridor
+        }
+        if(ok){ plane.originIata=o.iata_code;plane.originName=o.name;plane.originCity=o.municipality;
+          plane.destIata=d.iata_code;plane.destName=d.name;plane.destCity=d.municipality; }
+        else plane.routeSuspect=true;
+      }
     }}catch(_){}}
   return plane;
 }
@@ -443,7 +475,13 @@ const SAMPLE=[
 ];
 let si=0;
 function sampleInRange(){ return SAMPLE.map(s=>Object.assign({},s,{lat:state.lat+s.offLat,lon:state.lon+s.offLon}))
-  .filter(p=>p.altFt>=ALT_FLOOR && distMetric(p)<=state.rangeFt); }
+  .filter(p=>{
+    if(p.altFt<ALT_FLOOR) return false;
+    if(state.maxAlt>0 && p.altFt>state.maxAlt) return false;
+    const isHeli=p.cat==="A7";
+    if(state.airlinersOnly){ if(isHeli){ if(!state.inclHelis) return false; } else if(!isCommercial(p.type,p.callsign)) return false; }
+    return distMetric(p)<=state.rangeFt;
+  }); }
 
 let timer=null;
 async function tick(){
@@ -498,6 +536,8 @@ function openSheet(){
   $("latIn").value=state.lat.toFixed(4); $("lonIn").value=state.lon.toFixed(4);
   const mi=state.rangeFt/5280; $("rangeIn").value=mi; $("rangeVal").textContent=mi.toFixed(1)+" mi";
   $("gsIn").value=state.gsFloor; $("gsVal").textContent=state.gsFloor+" kt";
+  $("airlinersIn").checked=state.airlinersOnly; $("helisIn").checked=state.inclHelis;
+  $("altIn").value=state.maxAlt; $("altVal").textContent=state.maxAlt?commas(state.maxAlt)+" ft":"Off";
   $("proxyIn").value=state.proxy;
   document.querySelectorAll("#orientSeg button").forEach(b=>b.classList.toggle("on",b.dataset.o===state.orient));
   renderLayoutList(); sheetOpen=true; $("sheet").classList.add("open");
@@ -507,6 +547,10 @@ $("rangeIn").oninput=e=>{ const mi=parseFloat(e.target.value); $("rangeVal").tex
 $("rangeIn").onchange=()=>{ store.set("rangeFt",state.rangeFt); state.displayedDist=null; startLoop(); };
 $("gsIn").oninput=e=>{ state.gsFloor=parseInt(e.target.value,10); $("gsVal").textContent=state.gsFloor+" kt"; };
 $("gsIn").onchange=()=>{ store.set("gsFloor",state.gsFloor); startLoop(); };
+$("airlinersIn").onchange=e=>{ state.airlinersOnly=e.target.checked; store.set("airlinersOnly",state.airlinersOnly); startLoop(); };
+$("helisIn").onchange=e=>{ state.inclHelis=e.target.checked; store.set("inclHelis",state.inclHelis); startLoop(); };
+$("altIn").oninput=e=>{ state.maxAlt=parseInt(e.target.value,10); $("altVal").textContent=state.maxAlt?commas(state.maxAlt)+" ft":"Off"; };
+$("altIn").onchange=()=>{ store.set("maxAlt",state.maxAlt); startLoop(); };
 $("gpsBtn").onclick=()=>{ if(!navigator.geolocation){ $("gpsBtn").textContent="Type coordinates instead"; return; }
   $("gpsBtn").textContent="Locating…";
   navigator.geolocation.getCurrentPosition(
@@ -517,6 +561,7 @@ $("saveBtn").onclick=()=>{
   if(!isNaN(la)&&!isNaN(lo)){ state.lat=la; state.lon=lo; store.set("lat",la); store.set("lon",lo); }
   const px=$("proxyIn").value.trim(); state.proxy=px; store.set("proxy",px); state.directOK=null;
   store.set("rangeFt",state.rangeFt); store.set("gsFloor",state.gsFloor);
+  store.set("airlinersOnly",state.airlinersOnly); store.set("inclHelis",state.inclHelis); store.set("maxAlt",state.maxAlt);
   sheetOpen=false; $("sheet").classList.remove("open"); state.displayedDist=null; startLoop();
 };
 $("resetLayout").onclick=()=>{ state.layout=reconcileLayout(null); store.set("layout",state.layout); buildBoard(); renderLayoutList(); };
