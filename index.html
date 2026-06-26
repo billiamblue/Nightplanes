@@ -38,28 +38,24 @@
   .board.land{grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,1fr)}
   .board.port{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(0,1fr)}
   .cell{background:var(--card);border:1px solid var(--sep);border-radius:var(--radius);position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .cell[data-tile="distance"],.cell[data-tile="direction"]{cursor:pointer}
   .cap{font-size:11px;color:var(--label-3);padding:11px 14px 0;flex:0 0 auto}
 
   .t-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:0;padding:8px;text-align:center}
-
   .clk{font-weight:700;line-height:1;font-size:clamp(26px,9vmin,76px)} .clk-d{font-size:11px;color:var(--label-3)}
-
   .logo{height:min(62%,140px);aspect-ratio:1/1;width:auto;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
   .logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;padding:8%}
   .logo.fallback{background:var(--tile)}
   .logo .badge{font-weight:700;font-size:clamp(16px,5vmin,30px);color:var(--label-2)}
   .name{font-size:12.5px;font-weight:600;color:var(--label);line-height:1.2}
-
   .flightcode{font-weight:600;color:var(--label);line-height:1;font-size:clamp(18px,6vmin,40px)}
   .craft{font-size:11px;color:var(--label-3);line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
   .route-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;padding:8px 12px}
   .codes{display:flex;align-items:center;gap:.28em;white-space:nowrap;line-height:1;font-size:clamp(24px,11vmin,64px);font-weight:700}
   .codes .code{color:var(--label)} .codes .arrow{color:var(--label-3);font-size:.62em;font-weight:400}
   .ends{display:flex;justify-content:space-between;gap:12px;width:100%;max-width:520px;margin-top:12px}
   .ends > div{flex:1;min-width:0;text-align:center;font-size:11.5px;color:var(--label-2);line-height:1.3;overflow:hidden;text-overflow:ellipsis}
   .ends .city{display:block;color:var(--label-3);font-size:9.5px;text-transform:uppercase;margin-top:2px}
-
   .big{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 10px;min-width:0}
   .num{font-weight:700;color:var(--label);line-height:.95;font-size:clamp(26px,11vmin,62px);white-space:nowrap}
   .unit{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--label-2)}
@@ -69,7 +65,6 @@
   .sub .v{font-size:14px;margin-top:3px;color:var(--label)}
   .overhead{color:var(--green)!important}
   .empty{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:var(--label-3);font-size:11px;padding:0 10px}
-
   .dial{flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;padding:6px}
   .dial svg{width:auto;height:100%;max-width:100%;max-height:100%;aspect-ratio:1/1;display:block}
   .ringbg{fill:none;stroke:var(--sep);stroke-width:1}
@@ -79,9 +74,7 @@
   .sprite{fill:var(--label)} .hub{fill:var(--label-3)}
   .dirhint{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:var(--blue);pointer-events:none}
   .dirlabel{flex:0 0 auto;text-align:center;font-size:11.5px;color:var(--label-2);padding:0 6px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:14px}
-
   .last-txt{font-size:12.5px;color:var(--label-2);line-height:1.35;padding:0 10px}
-
   .fade{transition:opacity .42s ease} .fading{opacity:0}
   @media (prefers-reduced-motion:reduce){ .fade{transition:none} }
 
@@ -93,17 +86,15 @@
     padding:16px max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
   #sheet.open{transform:translateY(0)}
   #sheet h2{margin:0 0 12px;font-size:16px}
-
   .acc{border:1px solid var(--sep);border-radius:12px;margin-bottom:10px;overflow:hidden}
   .acc-h{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--tile);color:var(--label);
     border:0;font:inherit;font-size:14px;font-weight:600;padding:13px 14px;cursor:pointer}
   .acc-h .chev{color:var(--label-3);transition:transform .2s} .acc.open .acc-h .chev{transform:rotate(180deg)}
   .acc-b{display:none;padding:14px} .acc.open .acc-b{display:block}
-
   .seg .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--label);margin-bottom:4px}
   .seg .lab span{color:var(--blue);font-weight:600}
-  .seg .hint{margin:6px 0 0;font-size:11px;color:var(--label-3);line-height:1.4}
-  .hint{font-size:11px;color:var(--label-3);line-height:1.4}
+  .seg .hint,.hint{font-size:11px;color:var(--label-3);line-height:1.4}
+  .seg .hint{margin:6px 0 0}
   input[type=range]{width:100%;accent-color:var(--blue);height:30px}
   .frow{display:flex;gap:10px;flex-wrap:wrap}
   .field{flex:1;min-width:120px}
@@ -113,11 +104,9 @@
   .gps{margin-top:11px;width:100%;font:inherit;font-size:14px;border-radius:11px;padding:13px;cursor:pointer;background:var(--bg);color:var(--blue);border:1px solid var(--sep)}
   .save{margin-top:10px;width:100%;font:inherit;font-size:15px;font-weight:600;border-radius:12px;padding:13px;cursor:pointer;background:var(--blue);color:#fff;border:0}
   .gps:active,.save:active{filter:brightness(1.2)}
-
   .segc{display:flex;gap:6px;background:var(--bg);border:1px solid var(--sep);border-radius:11px;padding:4px}
   .segc button{flex:1;font:inherit;font-size:13px;color:var(--label-2);background:transparent;border:0;border-radius:8px;padding:9px;cursor:pointer}
   .segc button.on{background:var(--blue);color:#fff;font-weight:600}
-
   .lnote{font-size:11px;color:var(--label-3);margin:0 0 10px}
   .lrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--sep)}
   .lrow:last-child{border-bottom:0}
@@ -141,6 +130,7 @@
     <span id="statusText">Starting…</span>
     <span class="spacer"></span>
     <span class="hdrclock tnum" id="hdrClock"></span>
+    <button class="iconbtn" id="gpsQuick" title="Update location">⌖</button>
     <button class="iconbtn" id="dimBtn" title="Dim">☾</button>
     <button class="iconbtn" id="setBtn" title="Settings">☰</button>
   </div>
@@ -157,6 +147,7 @@
     <div class="acc-b">
       <p class="lnote" id="layoutOrient">Editing current orientation</p>
       <div id="layoutList"></div>
+      <button class="gps" id="resetLayout">Reset layout to defaults</button>
     </div>
   </div>
 
@@ -166,6 +157,15 @@
       <div class="lab">Show within <span id="rangeVal">5.0 mi</span></div>
       <input type="range" id="rangeIn" min="0.5" max="15" step="0.5" value="5" />
       <p class="hint">Hide aircraft farther than this. Lower it until only the traffic you care about shows.</p>
+    </div>
+  </div>
+
+  <div class="acc">
+    <button class="acc-h" type="button">Filters <span class="chev">▾</span></button>
+    <div class="acc-b seg">
+      <div class="lab">Min ground speed <span id="gsVal">5 kt</span></div>
+      <input type="range" id="gsIn" min="0" max="30" step="1" value="5" />
+      <p class="hint">Hide stationary aircraft — parked or idling planes that broadcast bad altitude data. Set to 0 to also show hovering helicopters.</p>
     </div>
   </div>
 
@@ -216,26 +216,27 @@ const DEFAULT_L=[
   {id:"direction",on:1,w:1,h:1},{id:"lastseen",on:1,w:1,h:1},{id:"clock",on:1,w:1,h:1}
 ];
 const DEFAULT_P=[
-  {id:"clock",on:1,w:2,h:1},{id:"logo",on:1,w:1,h:1},{id:"flight",on:1,w:1,h:1},{id:"route",on:1,w:2,h:1},
-  {id:"distance",on:1,w:2,h:1},{id:"direction",on:1,w:1,h:1},{id:"lastseen",on:1,w:1,h:1}
+  {id:"logo",on:1,w:1,h:1},{id:"distance",on:1,w:1,h:2},{id:"flight",on:1,w:1,h:1},{id:"route",on:1,w:2,h:1},
+  {id:"clock",on:1,w:1,h:1},{id:"lastseen",on:1,w:1,h:1},{id:"direction",on:1,w:2,h:2}
 ];
 const TILE_HTML={
   clock:`<div class="cap">Time</div><div class="t-center"><div class="clk tnum" id="clock">--:--</div><div class="clk-d" id="clockDate"></div></div>`,
   logo:`<div class="cap">Carrier</div><div class="t-center"><div class="logo fallback" id="logo"><span class="badge">—</span></div><div class="name fade" id="airlineName">—</div></div>`,
   flight:`<div class="cap">Flight</div><div class="t-center"><div class="flightcode tnum fade" id="flightCode">—</div><div class="craft fade" id="craft"></div></div>`,
   route:`<div class="cap" style="position:absolute;top:0;left:0">Route</div><div class="route-body"><div class="codes fade" id="codes"><span class="code" id="origin">···</span><span class="arrow">→</span><span class="code" id="dest">···</span></div><div class="ends fade" id="ends"><div><span id="originName">—</span><span class="city" id="originCity"></span></div><div><span id="destName">—</span><span class="city" id="destCity"></span></div></div></div>`,
-  distance:`<div class="cap">Distance to you</div><div class="big"><span class="num tnum" id="distNum">—</span><span class="unit" id="distUnit">feet away</span></div><div class="sub"><div><div class="k">Altitude</div><div class="v tnum" id="alt">—</div></div><div><div class="k">Overhead</div><div class="v tnum" id="ohead">—</div></div></div><div class="empty" id="emptyMsg" style="display:none">No aircraft in range</div>`,
+  distance:`<div class="cap" id="distCap">Distance · overhead</div><div class="big"><span class="num tnum" id="distNum">—</span><span class="unit" id="distUnit">feet away</span></div><div class="sub"><div><div class="k">Altitude</div><div class="v tnum" id="alt">—</div></div><div><div class="k">Overhead</div><div class="v tnum" id="ohead">—</div></div></div><div class="empty" id="emptyMsg" style="display:none">No aircraft in range</div>`,
   direction:`<div class="cap">Direction</div><div class="dial"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="ringbg"/><g id="ring"><line class="tick major" x1="50" y1="6" x2="50" y2="12"/><line class="tick" x1="94" y1="50" x2="88" y2="50"/><line class="tick" x1="50" y1="94" x2="50" y2="88"/><line class="tick" x1="6" y1="50" x2="12" y2="50"/><text class="card cardN" x="50" y="17" text-anchor="middle" dominant-baseline="central">N</text><text class="card" x="85" y="50" text-anchor="middle" dominant-baseline="central">E</text><text class="card" x="50" y="83" text-anchor="middle" dominant-baseline="central">S</text><text class="card" x="15" y="50" text-anchor="middle" dominant-baseline="central">W</text></g><line id="guide" class="guide" x1="50" y1="50" x2="50" y2="16"/><g id="planeMarker" style="display:none"><path class="sprite" d="M0,-6.5 L1.4,-1.5 L6,1.5 L6,2.8 L1.4,1.2 L1.2,4.5 L2.6,6 L2.6,6.8 L0,5.9 L-2.6,6.8 L-2.6,6 L-1.2,4.5 L-1.4,1.2 L-6,2.8 L-6,1.5 L-1.4,-1.5 Z"/></g><circle cx="50" cy="50" r="2" class="hub"/></svg><div class="dirhint" id="dirHint"></div></div><div class="dirlabel" id="dirLabel"></div>`,
   lastseen:`<div class="cap">Last seen</div><div class="t-center"><div class="last-txt" id="lastSeen">—</div></div>`
 };
 
-const ALT_FLOOR=50; /* feet — exclude aircraft below this, and exclude unknown altitude */
+const ALT_FLOOR=50;
 
 const state={ lat:37.468, lon:-122.141, mode:"starting", displayedDist:null, dim:false,
-  rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null, layout:null, orient:"auto" };
+  rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null, layout:null,
+  orient:"auto", gsFloor:5, distMode:"ground" };
 state.lat=store.get("lat",state.lat); state.lon=store.get("lon",state.lon);
 state.rangeFt=store.get("rangeFt",state.rangeFt); state.proxy=store.get("proxy",""); state.dim=store.get("dim",false);
-state.orient=store.get("orient","auto");
+state.orient=store.get("orient","auto"); state.gsFloor=store.get("gsFloor",5); state.distMode=store.get("distMode","ground");
 
 function reconcileLayout(saved){
   const def={l:DEFAULT_L,p:DEFAULT_P}, out={};
@@ -262,6 +263,7 @@ function haversineMeters(aLat,aLon,bLat,bLon){
 }
 function slantFeet(p){ const g=haversineMeters(state.lat,state.lon,p.lat,p.lon),a=(p.altFt||0)/FT_PER_M; return Math.sqrt(g*g+a*a)*FT_PER_M; }
 function groundFeet(p){ return haversineMeters(state.lat,state.lon,p.lat,p.lon)*FT_PER_M; }
+function distMetric(p){ return state.distMode==="ground"? groundFeet(p): slantFeet(p); }
 function bearingTo(aLat,aLon,bLat,bLon){
   const y=Math.sin((bLon-aLon)*D2R)*Math.cos(bLat*D2R),
         x=Math.cos(aLat*D2R)*Math.sin(bLat*D2R)-Math.sin(aLat*D2R)*Math.cos(bLat*D2R)*Math.cos((bLon-aLon)*D2R);
@@ -335,7 +337,6 @@ function requestCompass(){
   }
 }
 
-/* distance: miles (2 sig figs) at >=1mi, feet under 1mi; count-up only in feet */
 function sig2(x){ return x.toPrecision(2); }
 function animateFeet(target){ const dn=$("distNum"); if(!dn) return;
   const start=(state.displayedDist==null||state.displayedDist>=5280)?target:state.displayedDist,t0=performance.now(),dur=600;
@@ -348,6 +349,7 @@ function showDistance(ft){ const dn=$("distNum"),un=$("distUnit"); if(!dn) retur
   else { if(un) un.textContent="feet away"; animateFeet(ft); }
   refit();
 }
+function updateDistCap(){ const e=$("distCap"); if(e) e.textContent="Distance · "+(state.distMode==="ground"?"overhead":"direct"); }
 function updateFooter(){ const el=$("lastSeen"); if(!el) return; const l=state.last;
   if(!l){ el.textContent="—"; return; } const p=l.plane;
   const route=(p.originIata&&p.destIata)?" · "+p.originIata+"→"+p.destIata:"";
@@ -365,7 +367,7 @@ function render(p){
   softSet($("codes"),()=>{ const o=$("origin"),d=$("dest"); if(o)o.textContent=p.originIata||"???"; if(d)d.textContent=p.destIata||"???"; });
   softSet($("ends"),()=>{ const a=$("originName"),b=$("destName"),c=$("originCity"),e=$("destCity");
     if(a)a.textContent=p.originName||(p.originIata?"":"Route unavailable"); if(b)b.textContent=p.destName||""; if(c)c.textContent=p.originCity||""; if(e)e.textContent=p.destCity||""; });
-  showDistance(slantFeet(p));
+  showDistance(distMetric(p));
   const al=$("alt"); if(al) al.textContent=p.altFt?commas(p.altFt)+" ft":"—";
   const oh=$("ohead"); if(oh){ const g=groundFeet(p); if(g<3000){ oh.textContent="YES"; oh.classList.add("overhead"); } else { oh.textContent=(g/5280).toFixed(1)+" mi"; oh.classList.remove("overhead"); } }
   updateCompass();
@@ -390,7 +392,7 @@ function buildBoard(){
     cell.style.gridColumn="span "+w; cell.style.gridRow="span "+t.h;
     cell.innerHTML=TILE_HTML[t.id]; board.appendChild(cell);
   }
-  repaint(); updateClock(); setTimeout(refit,0);
+  updateDistCap(); repaint(); updateClock(); setTimeout(refit,0);
 }
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -403,16 +405,26 @@ async function fetchLive(){
   const miles=state.rangeFt/5280, nm=Math.max(8,Math.ceil(miles/1.151)+3);
   const data=await getJSON(`https://api.airplanes.live/v2/point/${state.lat}/${state.lon}/${nm}`);
   const list=(data.ac||[]).filter(a=>typeof a.lat==="number"&&typeof a.lon==="number");
-  let best=null,bd=Infinity;
+  const cands=[];
   for(const a of list){
-    if(a.alt_baro==="ground") continue;
-    let altFt=Number(a.alt_baro); if(!Number.isFinite(altFt)) altFt=Number(a.alt_geom);
-    if(!Number.isFinite(altFt)||altFt<ALT_FLOOR) continue;
-    const d=slantFeet({lat:a.lat,lon:a.lon,altFt}); if(d<=state.rangeFt && d<bd){ bd=d; best={a,altFt}; }
+    if(a.alt_baro==="ground") continue;                                   // transponder on-ground bit
+    if(state.gsFloor>0 && Number.isFinite(a.gs) && a.gs<state.gsFloor) continue;  // parked / not moving
+    const baro=Number(a.alt_baro), geom=Number(a.alt_geom);
+    if(Number.isFinite(geom) && geom<ALT_FLOOR) continue;                 // GPS altitude says it's on the ground
+    const altFt=Number.isFinite(baro)?baro:(Number.isFinite(geom)?geom:null);
+    if(altFt==null || altFt<ALT_FLOOR) continue;                          // no usable / too-low altitude
+    const ground=groundFeet({lat:a.lat,lon:a.lon}), slant=slantFeet({lat:a.lat,lon:a.lon,altFt});
+    const metric=state.distMode==="ground"?ground:slant;
+    if(metric>state.rangeFt) continue;
+    cands.push({a,altFt,ground,slant,metric});
   }
-  if(!best) return null;
-  const a=best.a, plane={callsign:(a.flight||"").trim(),lat:a.lat,lon:a.lon,altFt:best.altFt,
-    track:(typeof a.track==="number"?a.track:null),cat:a.category,type:(a.t||"").toString(),desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString()};
+  if(!cands.length) return null;
+  const band=500; // within this many feet of each other, prefer the lower aircraft
+  cands.sort((p,q)=>{ const dm=p.metric-q.metric; if(Math.abs(dm)>band) return dm; return p.altFt-q.altFt; });
+  const c=cands[0], a=c.a;
+  const plane={callsign:(a.flight||"").trim(),lat:a.lat,lon:a.lon,altFt:c.altFt,
+    track:(typeof a.track==="number"?a.track:(typeof a.true_heading==="number"?a.true_heading:null)),
+    cat:a.category,type:(a.t||"").toString(),desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString()};
   if(plane.callsign){ try{ await sleep(1100);
     const j=await getJSON(`https://api.adsbdb.com/v0/callsign/${encodeURIComponent(plane.callsign)}`);
     const fr=j?.response?.flightroute; if(fr){
@@ -431,7 +443,7 @@ const SAMPLE=[
 ];
 let si=0;
 function sampleInRange(){ return SAMPLE.map(s=>Object.assign({},s,{lat:state.lat+s.offLat,lon:state.lon+s.offLon}))
-  .filter(p=>p.altFt>=ALT_FLOOR && slantFeet(p)<=state.rangeFt); }
+  .filter(p=>p.altFt>=ALT_FLOOR && distMetric(p)<=state.rangeFt); }
 
 let timer=null;
 async function tick(){
@@ -469,11 +481,23 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 function applyDim(){ $("dim").classList.toggle("on",state.dim); $("dimBtn").classList.toggle("on",state.dim); }
 $("dimBtn").onclick=()=>{ state.dim=!state.dim; applyDim(); store.set("dim",state.dim); };
 
+/* one-tap location from the status bar */
+$("gpsQuick").onclick=()=>{
+  if(!navigator.geolocation){ $("statusText").textContent="Location unavailable"; return; }
+  $("statusText").textContent="Updating location…";
+  navigator.geolocation.getCurrentPosition(
+    p=>{ state.lat=p.coords.latitude; state.lon=p.coords.longitude; store.set("lat",state.lat); store.set("lon",state.lon);
+      state.displayedDist=null; $("statusText").textContent="Location updated"; startLoop(); },
+    ()=>{ $("statusText").textContent="Location permission denied"; },
+    {enableHighAccuracy:true,timeout:8000});
+};
+
 let sheetOpen=false;
 document.querySelectorAll(".acc-h").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("open"));
 function openSheet(){
   $("latIn").value=state.lat.toFixed(4); $("lonIn").value=state.lon.toFixed(4);
   const mi=state.rangeFt/5280; $("rangeIn").value=mi; $("rangeVal").textContent=mi.toFixed(1)+" mi";
+  $("gsIn").value=state.gsFloor; $("gsVal").textContent=state.gsFloor+" kt";
   $("proxyIn").value=state.proxy;
   document.querySelectorAll("#orientSeg button").forEach(b=>b.classList.toggle("on",b.dataset.o===state.orient));
   renderLayoutList(); sheetOpen=true; $("sheet").classList.add("open");
@@ -481,6 +505,8 @@ function openSheet(){
 $("setBtn").onclick=openSheet;
 $("rangeIn").oninput=e=>{ const mi=parseFloat(e.target.value); $("rangeVal").textContent=mi.toFixed(1)+" mi"; state.rangeFt=mi*5280; };
 $("rangeIn").onchange=()=>{ store.set("rangeFt",state.rangeFt); state.displayedDist=null; startLoop(); };
+$("gsIn").oninput=e=>{ state.gsFloor=parseInt(e.target.value,10); $("gsVal").textContent=state.gsFloor+" kt"; };
+$("gsIn").onchange=()=>{ store.set("gsFloor",state.gsFloor); startLoop(); };
 $("gpsBtn").onclick=()=>{ if(!navigator.geolocation){ $("gpsBtn").textContent="Type coordinates instead"; return; }
   $("gpsBtn").textContent="Locating…";
   navigator.geolocation.getCurrentPosition(
@@ -490,9 +516,10 @@ $("saveBtn").onclick=()=>{
   const la=parseFloat($("latIn").value),lo=parseFloat($("lonIn").value);
   if(!isNaN(la)&&!isNaN(lo)){ state.lat=la; state.lon=lo; store.set("lat",la); store.set("lon",lo); }
   const px=$("proxyIn").value.trim(); state.proxy=px; store.set("proxy",px); state.directOK=null;
-  store.set("rangeFt",state.rangeFt);
+  store.set("rangeFt",state.rangeFt); store.set("gsFloor",state.gsFloor);
   sheetOpen=false; $("sheet").classList.remove("open"); state.displayedDist=null; startLoop();
 };
+$("resetLayout").onclick=()=>{ state.layout=reconcileLayout(null); store.set("layout",state.layout); buildBoard(); renderLayoutList(); };
 
 $("orientSeg").addEventListener("click",e=>{ const b=e.target.closest("button[data-o]"); if(!b) return;
   state.orient=b.dataset.o; store.set("orient",state.orient);
@@ -532,7 +559,13 @@ $("layoutList").addEventListener("change",e=>{
   afterLayoutChange();
 });
 
-$("board").addEventListener("click",e=>{ if(e.target.closest('[data-tile="direction"]')) requestCompass(); });
+$("board").addEventListener("click",e=>{
+  if(e.target.closest('[data-tile="direction"]')){ requestCompass(); return; }
+  if(e.target.closest('[data-tile="distance"]')){
+    state.distMode=state.distMode==="ground"?"slant":"ground"; store.set("distMode",state.distMode);
+    updateDistCap(); if(state.current) showDistance(distMetric(state.current.plane)); startLoop();
+  }
+});
 
 const mq=window.matchMedia("(orientation:portrait)");
 (mq.addEventListener?mq.addEventListener.bind(mq,"change"):mq.addListener.bind(mq))(()=>{ buildBoard(); if(sheetOpen) renderLayoutList(); });
