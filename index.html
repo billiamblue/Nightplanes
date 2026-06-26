@@ -21,57 +21,56 @@
     -webkit-font-smoothing:antialiased;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
   .tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
-  #rotate{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;text-align:center;background:var(--bg);padding:24px}
-  #rotate .glyph{font-size:42px;display:inline-block;animation:spin 2.4s ease-in-out infinite}
-  #rotate p{color:var(--label-2);margin-top:14px;font-size:15px}
-  @keyframes spin{0%,40%{transform:rotate(0)}60%,100%{transform:rotate(90deg)}}
-  @media (orientation:portrait) and (max-width:900px){ #rotate{display:flex} #app{display:none} }
-  @media (prefers-reduced-motion:reduce){ #rotate .glyph{animation:none} }
-
   #app{height:100%;display:flex;flex-direction:column;
     padding:max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
-            max(8px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+            max(10px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 
   .status{display:flex;align-items:center;gap:9px;flex:0 0 auto;padding:0 4px 9px;font-size:12px;color:var(--label-2)}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--label-3);flex:0 0 auto}
   .dot.live{background:var(--green)} .dot.sim{background:var(--orange)} .dot.err{background:var(--red)}
   .status .spacer{flex:1}
-  .status .time{color:var(--label-3)}
+  .hdrclock{color:var(--label);font-size:14px;font-weight:600}
   .iconbtn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--card);
     border:1px solid var(--sep);border-radius:11px;color:var(--label-2);font-size:15px;cursor:pointer;padding:0}
   .iconbtn:active{background:var(--tile)} .iconbtn.on{color:var(--blue);border-color:var(--blue)}
 
-  .board{flex:1;display:grid;grid-template-columns:1fr 1.7fr 1.1fr 1.15fr;gap:11px;min-height:0}
+  /* grid board — browser packs the tiles */
+  .board{flex:1;display:grid;gap:11px;min-height:0;grid-auto-flow:dense}
+  .board.land{grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,1fr)}
+  .board.port{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(0,1fr)}
   .cell{background:var(--card);border:1px solid var(--sep);border-radius:var(--radius);position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-  .cap{font-size:11px;color:var(--label-3);padding:12px 14px 0;flex:0 0 auto}
+  .cap{font-size:11px;color:var(--label-3);padding:11px 14px 0;flex:0 0 auto}
 
-  .carrier{align-items:center;justify-content:center;gap:8px;padding:11px}
-  .logo{width:min(24vw,104px);aspect-ratio:1/1;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .t-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:0;padding:8px;text-align:center}
+
+  .clk{font-weight:700;line-height:1;font-size:clamp(26px,9vmin,76px)} .clk-d{font-size:11px;color:var(--label-3)}
+
+  .logo{height:min(58%,130px);aspect-ratio:1/1;width:auto;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
   .logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;padding:11%}
   .logo.fallback{background:var(--tile)}
-  .logo .badge{font-weight:700;font-size:clamp(16px,4.6vmin,30px);color:var(--label-2)}
-  .carrier .name{font-size:12.5px;font-weight:600;color:var(--label);text-align:center;line-height:1.2}
-  .carrier .flight{font-size:11.5px;color:var(--label-2)}
-  .carrier .craft{font-size:10.5px;color:var(--label-3);text-align:center;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .logo .badge{font-weight:700;font-size:clamp(16px,5vmin,30px);color:var(--label-2)}
+  .name{font-size:12.5px;font-weight:600;color:var(--label);line-height:1.2}
 
-  .route{align-items:center;justify-content:center;padding:10px 12px}
-  .codes{display:flex;align-items:center;gap:.28em;white-space:nowrap;line-height:1;font-size:clamp(28px,12vmin,68px);font-weight:700}
+  .flightcode{font-weight:600;color:var(--label);line-height:1;font-size:clamp(18px,6vmin,40px)}
+  .craft{font-size:11px;color:var(--label-3);line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .route-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;padding:8px 12px}
+  .codes{display:flex;align-items:center;gap:.28em;white-space:nowrap;line-height:1;font-size:clamp(24px,11vmin,64px);font-weight:700}
   .codes .code{color:var(--label)} .codes .arrow{color:var(--label-3);font-size:.62em;font-weight:400}
-  .ends{display:flex;justify-content:space-between;gap:12px;width:100%;max-width:520px;margin-top:13px}
+  .ends{display:flex;justify-content:space-between;gap:12px;width:100%;max-width:520px;margin-top:12px}
   .ends > div{flex:1;min-width:0;text-align:center;font-size:11.5px;color:var(--label-2);line-height:1.3;overflow:hidden;text-overflow:ellipsis}
   .ends .city{display:block;color:var(--label-3);font-size:9.5px;text-transform:uppercase;margin-top:2px}
 
-  .dist{justify-content:flex-start}
-  .dist .big{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 10px;min-width:0}
-  .dist .num{font-weight:700;color:var(--label);line-height:.95;font-size:clamp(26px,11vmin,58px);white-space:nowrap}
-  .dist .unit{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--label-2)}
-  .dist .sub{display:flex;flex:0 0 auto;border-top:1px solid var(--sep)}
-  .dist .sub div{flex:1;text-align:center;padding:9px 6px} .dist .sub div+div{border-left:1px solid var(--sep)}
-  .dist .sub .k{font-size:9.5px;text-transform:uppercase;color:var(--label-3)}
-  .dist .sub .v{font-size:14px;margin-top:3px;color:var(--label)}
+  .big{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 10px;min-width:0}
+  .num{font-weight:700;color:var(--label);line-height:.95;font-size:clamp(26px,11vmin,62px);white-space:nowrap}
+  .unit{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--label-2)}
+  .sub{display:flex;flex:0 0 auto;border-top:1px solid var(--sep)}
+  .sub div{flex:1;text-align:center;padding:9px 6px} .sub div+div{border-left:1px solid var(--sep)}
+  .sub .k{font-size:9.5px;text-transform:uppercase;color:var(--label-3)}
+  .sub .v{font-size:14px;margin-top:3px;color:var(--label)}
   .overhead{color:var(--green)!important}
+  .empty{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:var(--label-3);font-size:11px;padding:0 10px}
 
-  .direction{align-items:stretch}
   .dial{flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;padding:6px}
   .dial svg{width:auto;height:100%;max-width:100%;max-height:100%;aspect-ratio:1/1;display:block}
   .ringbg{fill:none;stroke:var(--sep);stroke-width:1}
@@ -82,22 +81,27 @@
   .dirhint{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:10px;color:var(--blue);pointer-events:none}
   .dirlabel{flex:0 0 auto;text-align:center;font-size:11.5px;color:var(--label-2);padding:0 6px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:14px}
 
-  .footer{flex:0 0 auto;padding:8px 6px 2px;font-size:12px;color:var(--label-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:18px}
+  .last-txt{font-size:12.5px;color:var(--label-2);line-height:1.35;padding:0 10px}
 
   .fade{transition:opacity .42s ease} .fading{opacity:0}
   @media (prefers-reduced-motion:reduce){ .fade{transition:none} }
-  .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--label-3);font-size:13px;padding:16px}
 
   #dim{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:50;transition:opacity .4s ease}
   #dim.on{opacity:.62}
-  @media (orientation:portrait) and (min-width:901px){ .board{grid-template-columns:1fr 1fr;grid-auto-rows:1fr} }
 
+  /* settings sheet */
   #sheet{position:fixed;left:0;right:0;bottom:0;z-index:70;transform:translateY(110%);transition:transform .28s ease;
-    background:var(--card);border-top:1px solid var(--sep);border-radius:20px 20px 0 0;max-height:90vh;overflow:auto;
-    padding:18px max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+    background:var(--card);border-top:1px solid var(--sep);border-radius:20px 20px 0 0;max-height:92vh;overflow:auto;
+    padding:16px max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
   #sheet.open{transform:translateY(0)}
-  #sheet h2{margin:0 0 14px;font-size:16px}
-  .seg{margin-bottom:18px}
+  #sheet h2{margin:0 0 12px;font-size:16px}
+
+  .acc{border:1px solid var(--sep);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .acc-h{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--tile);color:var(--label);
+    border:0;font:inherit;font-size:14px;font-weight:600;padding:13px 14px;cursor:pointer}
+  .acc-h .chev{color:var(--label-3);transition:transform .2s} .acc.open .acc-h .chev{transform:rotate(180deg)}
+  .acc-b{display:none;padding:14px} .acc.open .acc-b{display:block}
+
   .seg .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--label);margin-bottom:4px}
   .seg .lab span{color:var(--blue);font-weight:600}
   .seg .hint{margin:6px 0 0;font-size:11px;color:var(--label-3);line-height:1.4}
@@ -105,132 +109,137 @@
   .frow{display:flex;gap:10px;flex-wrap:wrap}
   .field{flex:1;min-width:120px}
   .field label{display:block;font-size:10px;text-transform:uppercase;color:var(--label-3);margin-bottom:6px}
-  .txt,.field input{width:100%;background:var(--tile);border:1px solid var(--sep);color:var(--label);border-radius:11px;padding:12px;font:inherit;font-size:16px}
+  .txt,.field input{width:100%;background:var(--bg);border:1px solid var(--sep);color:var(--label);border-radius:11px;padding:12px;font:inherit;font-size:16px}
   .txt:focus,.field input:focus{outline:none;border-color:var(--blue)}
-  .gps{margin-top:11px;width:100%;font:inherit;font-size:14px;border-radius:11px;padding:13px;cursor:pointer;background:var(--tile);color:var(--blue);border:1px solid var(--sep)}
-  .actions{display:flex;gap:10px;margin-top:16px}
-  .actions button{flex:1;font:inherit;font-size:15px;border-radius:12px;padding:13px;cursor:pointer;border:1px solid var(--sep)}
-  .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600}
-  .btn-ghost{background:transparent;color:var(--label-2)}
-  .gps:active,.actions button:active{filter:brightness(1.2)}
+  .gps{margin-top:11px;width:100%;font:inherit;font-size:14px;border-radius:11px;padding:13px;cursor:pointer;background:var(--bg);color:var(--blue);border:1px solid var(--sep)}
+  .save{margin-top:10px;width:100%;font:inherit;font-size:15px;font-weight:600;border-radius:12px;padding:13px;cursor:pointer;background:var(--blue);color:#fff;border:0}
+  .gps:active,.save:active{filter:brightness(1.2)}
+
+  /* layout manager */
+  .lnote{font-size:11px;color:var(--label-3);margin:0 0 10px}
+  .lrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--sep)}
+  .lrow:last-child{border-bottom:0}
+  .lmove{display:flex;flex-direction:column;gap:2px}
+  .lmove button{width:26px;height:18px;line-height:1;font-size:10px;background:var(--tile);color:var(--label-2);border:1px solid var(--sep);border-radius:5px;cursor:pointer;padding:0}
+  .lname{flex:1;font-size:13px;color:var(--label)}
+  .lsize{background:var(--bg);color:var(--label);border:1px solid var(--sep);border-radius:9px;padding:7px 8px;font:inherit;font-size:13px}
+  .lsw{position:relative;display:inline-block;width:44px;height:26px;flex:0 0 auto}
+  .lsw input{opacity:0;width:0;height:0}
+  .lsw .sl{position:absolute;inset:0;background:var(--tile);border:1px solid var(--sep);border-radius:13px;transition:.2s}
+  .lsw .sl:before{content:"";position:absolute;width:20px;height:20px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s}
+  .lsw input:checked + .sl{background:var(--green);border-color:var(--green)}
+  .lsw input:checked + .sl:before{transform:translateX(18px)}
 </style>
 </head>
 <body>
-
-<div id="rotate"><div><span class="glyph">📱</span><p>Turn your phone sideways</p></div></div>
 
 <div id="app">
   <div class="status">
     <span class="dot" id="statusDot"></span>
     <span id="statusText">Starting…</span>
     <span class="spacer"></span>
-    <span class="time tnum" id="updated"></span>
+    <span class="hdrclock tnum" id="hdrClock"></span>
     <button class="iconbtn" id="dimBtn" title="Dim">☾</button>
     <button class="iconbtn" id="setBtn" title="Settings">☰</button>
   </div>
-
-  <div class="board">
-    <div class="cell carrier">
-      <div class="logo fallback" id="logo"><span class="badge">—</span></div>
-      <div class="name fade" id="airlineName">—</div>
-      <div class="flight tnum fade" id="flightCode">—</div>
-      <div class="craft fade" id="craft"></div>
-    </div>
-
-    <div class="cell route">
-      <div class="cap" style="position:absolute;top:0;left:0">Route</div>
-      <div class="codes fade" id="codes">
-        <span class="code" id="origin">···</span><span class="arrow">→</span><span class="code" id="dest">···</span>
-      </div>
-      <div class="ends fade" id="ends">
-        <div><span id="originName">—</span><span class="city" id="originCity"></span></div>
-        <div><span id="destName">—</span><span class="city" id="destCity"></span></div>
-      </div>
-    </div>
-
-    <div class="cell dist">
-      <div class="cap">Distance to you</div>
-      <div class="big"><span class="num tnum" id="distNum">—</span><span class="unit">feet away</span></div>
-      <div class="sub">
-        <div><div class="k">Altitude</div><div class="v tnum" id="alt">—</div></div>
-        <div><div class="k">Overhead</div><div class="v tnum" id="ohead">—</div></div>
-      </div>
-      <div class="empty" id="emptyMsg" style="display:none">Listening for aircraft overhead…</div>
-    </div>
-
-    <div class="cell direction" id="dirCell">
-      <div class="cap">Direction</div>
-      <div class="dial">
-        <svg viewBox="0 0 100 100" id="compass" aria-hidden="true">
-          <circle cx="50" cy="50" r="44" class="ringbg"/>
-          <g id="ring">
-            <line class="tick major" x1="50" y1="6" x2="50" y2="12"/>
-            <line class="tick" x1="94" y1="50" x2="88" y2="50"/>
-            <line class="tick" x1="50" y1="94" x2="50" y2="88"/>
-            <line class="tick" x1="6" y1="50" x2="12" y2="50"/>
-            <text class="card cardN" x="50" y="17" text-anchor="middle" dominant-baseline="central">N</text>
-            <text class="card" x="85" y="50" text-anchor="middle" dominant-baseline="central">E</text>
-            <text class="card" x="50" y="83" text-anchor="middle" dominant-baseline="central">S</text>
-            <text class="card" x="15" y="50" text-anchor="middle" dominant-baseline="central">W</text>
-          </g>
-          <line id="guide" class="guide" x1="50" y1="50" x2="50" y2="16"/>
-          <g id="planeMarker" style="display:none">
-            <path class="sprite" d="M0,-6.5 L1.4,-1.5 L6,1.5 L6,2.8 L1.4,1.2 L1.2,4.5 L2.6,6 L2.6,6.8 L0,5.9 L-2.6,6.8 L-2.6,6 L-1.2,4.5 L-1.4,1.2 L-6,2.8 L-6,1.5 L-1.4,-1.5 Z"/>
-          </g>
-          <circle cx="50" cy="50" r="2" class="hub"/>
-        </svg>
-        <div class="dirhint" id="dirHint"></div>
-      </div>
-      <div class="dirlabel" id="dirLabel"></div>
-    </div>
-  </div>
-
-  <div class="footer" id="lastSeen"></div>
+  <div class="board land" id="board"></div>
 </div>
 
 <div id="dim"></div>
 
 <div id="sheet">
   <h2>Settings</h2>
-  <div class="seg">
-    <div class="lab">Audible range <span id="rangeVal">5.0 mi</span></div>
-    <input type="range" id="rangeIn" min="0.5" max="15" step="0.5" value="5" />
-    <p class="hint">Hide aircraft too far to hear. Lower this until only the planes you actually notice remain on screen.</p>
-  </div>
-  <div class="seg">
-    <div class="lab">Your location</div>
-    <div class="frow">
-      <div class="field"><label>Latitude</label><input id="latIn" inputmode="decimal" placeholder="37.468" /></div>
-      <div class="field"><label>Longitude</label><input id="lonIn" inputmode="decimal" placeholder="-122.141" /></div>
+
+  <div class="acc open">
+    <button class="acc-h" type="button">Layout <span class="chev">▾</span></button>
+    <div class="acc-b">
+      <p class="lnote" id="layoutOrient">Editing current orientation</p>
+      <div id="layoutList"></div>
     </div>
-    <button class="gps" id="gpsBtn">Use my phone's location</button>
   </div>
-  <div class="seg">
-    <div class="lab">Live data relay</div>
-    <input class="txt" id="proxyIn" placeholder="(optional) https://relay…/?url=" autocapitalize="off" autocorrect="off" spellcheck="false" />
-    <p class="hint">Leave blank to read the flight feed directly. If the live dot stays orange, paste a relay address here — see the setup guide.</p>
+
+  <div class="acc">
+    <button class="acc-h" type="button">Audible range <span class="chev">▾</span></button>
+    <div class="acc-b seg">
+      <div class="lab">Distance <span id="rangeVal">5.0 mi</span></div>
+      <input type="range" id="rangeIn" min="0.5" max="15" step="0.5" value="5" />
+      <p class="hint">Hide aircraft too far to hear. Lower this until only the planes you actually notice remain.</p>
+    </div>
   </div>
-  <div class="actions">
-    <button class="btn-ghost" id="closeSheet">Cancel</button>
-    <button class="btn-primary" id="saveLoc">Save</button>
+
+  <div class="acc">
+    <button class="acc-h" type="button">Location <span class="chev">▾</span></button>
+    <div class="acc-b">
+      <div class="frow">
+        <div class="field"><label>Latitude</label><input id="latIn" inputmode="decimal" placeholder="37.468" /></div>
+        <div class="field"><label>Longitude</label><input id="lonIn" inputmode="decimal" placeholder="-122.141" /></div>
+      </div>
+      <button class="gps" id="gpsBtn">Use my phone's location</button>
+    </div>
   </div>
+
+  <div class="acc">
+    <button class="acc-h" type="button">Data relay <span class="chev">▾</span></button>
+    <div class="acc-b seg">
+      <input class="txt" id="proxyIn" placeholder="(optional) https://relay…/?url=" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      <p class="hint">Leave blank to read the flight feed directly. If the live dot stays orange, paste a relay address — see the setup guide.</p>
+    </div>
+  </div>
+
+  <button class="save" id="saveBtn">Save & close</button>
 </div>
 
 <script>
 "use strict";
 
-/* persisted settings (works once hosted; silently skipped in restricted previews) */
 const store={ get(k,d){ try{ const v=localStorage.getItem("ovh_"+k); return v==null?d:JSON.parse(v); }catch(_){ return d; } },
   set(k,v){ try{ localStorage.setItem("ovh_"+k,JSON.stringify(v)); }catch(_){} } };
 
+/* ---- tiles ---- */
+const TILES={ clock:{label:"Clock"}, logo:{label:"Logo"}, flight:{label:"Flight info"},
+  route:{label:"Route"}, distance:{label:"Distance"}, direction:{label:"Direction"}, lastseen:{label:"Last seen"} };
+const DEFAULT_L=[
+  {id:"logo",on:1,w:1,h:1},{id:"flight",on:1,w:1,h:1},{id:"route",on:1,w:2,h:1},{id:"distance",on:1,w:1,h:1},
+  {id:"direction",on:1,w:1,h:1},{id:"lastseen",on:1,w:1,h:1},{id:"clock",on:1,w:1,h:1}
+];
+const DEFAULT_P=[
+  {id:"clock",on:1,w:2,h:1},{id:"logo",on:1,w:1,h:1},{id:"flight",on:1,w:1,h:1},{id:"route",on:1,w:2,h:1},
+  {id:"distance",on:1,w:2,h:1},{id:"direction",on:1,w:1,h:1},{id:"lastseen",on:1,w:1,h:1}
+];
+const TILE_HTML={
+  clock:`<div class="cap">Time</div><div class="t-center"><div class="clk tnum" id="clock">--:--</div><div class="clk-d" id="clockDate"></div></div>`,
+  logo:`<div class="cap">Carrier</div><div class="t-center"><div class="logo fallback" id="logo"><span class="badge">—</span></div><div class="name fade" id="airlineName">—</div></div>`,
+  flight:`<div class="cap">Flight</div><div class="t-center"><div class="flightcode tnum fade" id="flightCode">—</div><div class="craft fade" id="craft"></div></div>`,
+  route:`<div class="cap" style="position:absolute;top:0;left:0">Route</div><div class="route-body"><div class="codes fade" id="codes"><span class="code" id="origin">···</span><span class="arrow">→</span><span class="code" id="dest">···</span></div><div class="ends fade" id="ends"><div><span id="originName">—</span><span class="city" id="originCity"></span></div><div><span id="destName">—</span><span class="city" id="destCity"></span></div></div></div>`,
+  distance:`<div class="cap">Distance to you</div><div class="big"><span class="num tnum" id="distNum">—</span><span class="unit">feet away</span></div><div class="sub"><div><div class="k">Altitude</div><div class="v tnum" id="alt">—</div></div><div><div class="k">Overhead</div><div class="v tnum" id="ohead">—</div></div></div><div class="empty" id="emptyMsg" style="display:none">Listening for aircraft…</div>`,
+  direction:`<div class="cap">Direction</div><div class="dial"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="ringbg"/><g id="ring"><line class="tick major" x1="50" y1="6" x2="50" y2="12"/><line class="tick" x1="94" y1="50" x2="88" y2="50"/><line class="tick" x1="50" y1="94" x2="50" y2="88"/><line class="tick" x1="6" y1="50" x2="12" y2="50"/><text class="card cardN" x="50" y="17" text-anchor="middle" dominant-baseline="central">N</text><text class="card" x="85" y="50" text-anchor="middle" dominant-baseline="central">E</text><text class="card" x="50" y="83" text-anchor="middle" dominant-baseline="central">S</text><text class="card" x="15" y="50" text-anchor="middle" dominant-baseline="central">W</text></g><line id="guide" class="guide" x1="50" y1="50" x2="50" y2="16"/><g id="planeMarker" style="display:none"><path class="sprite" d="M0,-6.5 L1.4,-1.5 L6,1.5 L6,2.8 L1.4,1.2 L1.2,4.5 L2.6,6 L2.6,6.8 L0,5.9 L-2.6,6.8 L-2.6,6 L-1.2,4.5 L-1.4,1.2 L-6,2.8 L-6,1.5 L-1.4,-1.5 Z"/></g><circle cx="50" cy="50" r="2" class="hub"/></svg><div class="dirhint" id="dirHint"></div></div><div class="dirlabel" id="dirLabel"></div>`,
+  lastseen:`<div class="cap">Last seen</div><div class="t-center"><div class="last-txt" id="lastSeen">—</div></div>`
+};
+
+/* ---- state ---- */
 const state={ lat:37.468, lon:-122.141, mode:"starting", displayedDist:null, dim:false,
-  rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null };
+  rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null, layout:null };
 state.lat=store.get("lat",state.lat); state.lon=store.get("lon",state.lon);
 state.rangeFt=store.get("rangeFt",state.rangeFt); state.proxy=store.get("proxy",""); state.dim=store.get("dim",false);
 
+function reconcileLayout(saved){
+  const def={l:DEFAULT_L,p:DEFAULT_P}, out={};
+  for(const k of ["l","p"]){
+    let arr=(saved&&Array.isArray(saved[k]))? saved[k].map(x=>({id:x.id,on:x.on?1:0,w:x.w||1,h:x.h||1})).filter(x=>TILES[x.id]) : [];
+    const have=new Set(arr.map(x=>x.id));
+    for(const d of def[k]) if(!have.has(d.id)) arr.push({...d});
+    out[k]=arr;
+  }
+  return out;
+}
+state.layout=reconcileLayout(store.get("layout",null));
+
 const $=id=>document.getElementById(id);
 const FT_PER_M=3.280839895, D2R=Math.PI/180;
+const isPortrait=()=>window.matchMedia("(orientation:portrait)").matches;
+const cfg=()=>state.layout[isPortrait()?"p":"l"];
 
+/* ---- geometry ---- */
 function haversineMeters(aLat,aLon,bLat,bLon){
   const R=6371000,dLat=(bLat-aLat)*D2R,dLon=(bLon-aLon)*D2R;
   const s=Math.sin(dLat/2)**2+Math.cos(aLat*D2R)*Math.cos(bLat*D2R)*Math.sin(dLon/2)**2;
@@ -251,19 +260,21 @@ function relTime(ms){ const s=(Date.now()-ms)/1000;
   if(s<12) return "just now"; if(s<60) return Math.round(s)+"s ago";
   if(s<3600) return Math.round(s/60)+" min ago"; return Math.round(s/3600)+"h ago"; }
 
-function fitText(el,available,maxPx){ el.style.fontSize=maxPx+"px"; let size=maxPx,g=0;
+/* ---- text fit ---- */
+function fitText(el,available,maxPx){ if(!el)return; el.style.fontSize=maxPx+"px"; let size=maxPx,g=0;
   while(el.scrollWidth>available && size>11 && g<80){ size-=1; el.style.fontSize=size+"px"; g++; } }
 function refit(){
-  const rc=$("codes").closest(".cell"); if(rc&&rc.clientWidth) fitText($("codes"),rc.clientWidth-30,Math.min(68,rc.clientHeight*0.42));
-  const big=$("distNum").parentElement; if(big&&big.clientWidth) fitText($("distNum"),big.clientWidth-8,Math.min(58,big.clientHeight*0.6));
+  const codes=$("codes"); if(codes){ const c=codes.closest(".cell"); if(c&&c.clientWidth) fitText(codes,c.clientWidth-30,Math.min(64,c.clientHeight*0.42)); }
+  const dn=$("distNum"); if(dn&&dn.parentElement&&dn.parentElement.clientWidth) fitText(dn,dn.parentElement.clientWidth-8,Math.min(62,dn.parentElement.clientHeight*0.6));
 }
-function softSet(el,write){ el.classList.add("fading"); setTimeout(()=>{ write(); el.classList.remove("fading"); refit(); },180); }
+function softSet(el,write){ if(!el){return;} el.classList.add("fading"); setTimeout(()=>{ write(); el.classList.remove("fading"); refit(); },180); }
 
+/* ---- status ---- */
 function setStatus(mode,text){ state.mode=mode;
   $("statusDot").className="dot"+(mode==="live"?" live":mode==="sim"?" sim":mode==="error"?" err":"");
   $("statusText").textContent=text; }
 
-function setLogo(p){ const box=$("logo"); box.innerHTML="";
+function setLogo(p){ const box=$("logo"); if(!box) return; box.innerHTML="";
   const fb=()=>{ box.className="logo fallback"; const s=document.createElement("span"); s.className="badge";
     s.textContent=(p.airlineIata||p.airlineIcao||p.manufacturer||"✈").slice(0,3).toUpperCase(); box.appendChild(s); };
   if(p.airlineIata){ box.className="logo"; const img=document.createElement("img");
@@ -275,34 +286,30 @@ function craftLabel(p){
   return p.desc||p.type||"";
 }
 
-/* compass */
+/* ---- compass ---- */
 let heading=0, haveCompass=false, needsTap=false, pendingFrame=false;
 function screenAngle(){ try{ if(screen.orientation&&typeof screen.orientation.angle==="number") return screen.orientation.angle; }catch(_){}
   return (typeof window.orientation==="number")?window.orientation:0; }
 function effHeading(){ return haveCompass ? (heading+screenAngle()+360)%360 : 0; }
 function updateCompass(){
-  const h=effHeading();
-  $("ring").setAttribute("transform","rotate("+(-h)+" 50 50)");
-  const p=state.current&&state.current.plane;
-  const marker=$("planeMarker"), guide=$("guide");
-  if(!p){ marker.style.display="none"; guide.setAttribute("x2","50"); guide.setAttribute("y2","50"); $("dirLabel").textContent=""; setHint(); return; }
+  const ring=$("ring"); if(!ring) return;
+  const h=effHeading(); ring.setAttribute("transform","rotate("+(-h)+" 50 50)");
+  const p=state.current&&state.current.plane, marker=$("planeMarker"), guide=$("guide");
+  if(!p){ if(marker) marker.style.display="none"; if(guide){guide.setAttribute("x2","50");guide.setAttribute("y2","50");} const dl=$("dirLabel"); if(dl) dl.textContent=""; setHint(); return; }
   const brg=bearingTo(state.lat,state.lon,p.lat,p.lon);
   const a=(brg-h)*D2R, r=33, px=50+r*Math.sin(a), py=50-r*Math.cos(a);
   const rot=((p.track!=null?p.track:brg)-h);
-  marker.style.display="";
-  marker.setAttribute("transform","translate("+px.toFixed(2)+" "+py.toFixed(2)+") rotate("+rot.toFixed(1)+")");
-  guide.setAttribute("x2",px.toFixed(2)); guide.setAttribute("y2",py.toFixed(2));
+  if(marker){ marker.style.display=""; marker.setAttribute("transform","translate("+px.toFixed(2)+" "+py.toFixed(2)+") rotate("+rot.toFixed(1)+")"); }
+  if(guide){ guide.setAttribute("x2",px.toFixed(2)); guide.setAttribute("y2",py.toFixed(2)); }
   let lab=compass8(brg)+" · "+Math.round(brg)+"°";
   if(p.track!=null){ const b2u=(brg+180)%360,d=angDiff(p.track,b2u); lab+= d<75?" · inbound":d>105?" · outbound":" · crossing"; }
-  $("dirLabel").textContent=lab; setHint();
+  const dl=$("dirLabel"); if(dl) dl.textContent=lab; setHint();
 }
-function setHint(){ $("dirHint").textContent = haveCompass ? "" : (needsTap ? "Tap to enable compass" : "North up"); }
-function onOrient(e){
-  let h=null;
+function setHint(){ const e=$("dirHint"); if(e) e.textContent = haveCompass ? "" : (needsTap ? "Tap to enable compass" : "North up"); }
+function onOrient(e){ let h=null;
   if(typeof e.webkitCompassHeading==="number"&&!isNaN(e.webkitCompassHeading)) h=e.webkitCompassHeading;
   else if(typeof e.alpha==="number") h=(360-e.alpha)%360;
-  if(h==null||isNaN(h)) return;
-  heading=h; haveCompass=true;
+  if(h==null||isNaN(h)) return; heading=h; haveCompass=true;
   if(!pendingFrame){ pendingFrame=true; requestAnimationFrame(()=>{ pendingFrame=false; updateCompass(); }); }
 }
 function startCompass(){
@@ -315,57 +322,65 @@ function requestCompass(){
     DeviceOrientationEvent.requestPermission().then(s=>{ if(s==="granted"){ needsTap=false; window.addEventListener("deviceorientation",onOrient,true); } setHint(); }).catch(()=>{});
   }
 }
-$("dirCell").addEventListener("click",requestCompass);
 
-function animateDistance(target){ $("distNum").textContent=commas(target); refit();
+/* ---- render data ---- */
+function animateDistance(target){ const dn=$("distNum"); if(!dn) return; dn.textContent=commas(target); refit();
   const start=state.displayedDist==null?target:state.displayedDist,t0=performance.now(),dur=600;
   function step(now){ const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3),v=start+(target-start)*e;
-    $("distNum").textContent=commas(v); if(k<1) requestAnimationFrame(step); else state.displayedDist=target; }
+    dn.textContent=commas(v); if(k<1) requestAnimationFrame(step); else state.displayedDist=target; }
   requestAnimationFrame(step);
 }
-function updateFooter(){ const l=state.last,el=$("lastSeen");
-  if(!l){ el.textContent=""; return; } const p=l.plane;
+function updateFooter(){ const el=$("lastSeen"); if(!el) return; const l=state.last;
+  if(!l){ el.textContent="—"; return; } const p=l.plane;
   const route=(p.originIata&&p.destIata)?" · "+p.originIata+"→"+p.destIata:"";
   const alt=p.altFt?" · "+commas(p.altFt)+" ft":"";
-  el.textContent="Last seen · "+(p.callsign||"aircraft")+route+alt+" · "+relTime(l.at);
+  el.textContent=(p.callsign||"aircraft")+route+alt+" · "+relTime(l.at);
 }
 function render(p){
   if(state.current && state.current.callsign!==p.callsign){ state.last={plane:state.current.plane,at:Date.now()}; updateFooter(); }
   state.current={callsign:p.callsign,plane:p};
-  $("emptyMsg").style.display="none";
-  softSet($("airlineName"),()=>$("airlineName").textContent=p.airlineName||p.manufacturer||"Unknown aircraft");
+  const em=$("emptyMsg"); if(em) em.style.display="none";
+  softSet($("airlineName"),()=>$("airlineName").textContent=p.airlineName||p.manufacturer||"Unknown");
   softSet($("flightCode"),()=>$("flightCode").textContent=p.callsign||"");
   softSet($("craft"),()=>$("craft").textContent=craftLabel(p));
   setLogo(p);
-  softSet($("codes"),()=>{ $("origin").textContent=p.originIata||"???"; $("dest").textContent=p.destIata||"???"; });
-  softSet($("ends"),()=>{ $("originName").textContent=p.originName||(p.originIata?"":"Route unavailable");
-    $("destName").textContent=p.destName||""; $("originCity").textContent=p.originCity||""; $("destCity").textContent=p.destCity||""; });
+  softSet($("codes"),()=>{ const o=$("origin"),d=$("dest"); if(o)o.textContent=p.originIata||"???"; if(d)d.textContent=p.destIata||"???"; });
+  softSet($("ends"),()=>{ const a=$("originName"),b=$("destName"),c=$("originCity"),e=$("destCity");
+    if(a)a.textContent=p.originName||(p.originIata?"":"Route unavailable"); if(b)b.textContent=p.destName||""; if(c)c.textContent=p.originCity||""; if(e)e.textContent=p.destCity||""; });
   animateDistance(slantFeet(p));
-  $("alt").textContent=p.altFt?commas(p.altFt)+" ft":"—";
-  const g=groundFeet(p),oh=$("ohead");
-  if(g<3000){ oh.textContent="YES"; oh.classList.add("overhead"); } else { oh.textContent=(g/5280).toFixed(1)+" mi"; oh.classList.remove("overhead"); }
-  $("updated").textContent=new Date().toLocaleTimeString("en-US",{hour12:false});
+  const al=$("alt"); if(al) al.textContent=p.altFt?commas(p.altFt)+" ft":"—";
+  const oh=$("ohead"); if(oh){ const g=groundFeet(p); if(g<3000){ oh.textContent="YES"; oh.classList.add("overhead"); } else { oh.textContent=(g/5280).toFixed(1)+" mi"; oh.classList.remove("overhead"); } }
   updateCompass();
 }
 function showEmpty(){
   state.current=null;
-  $("emptyMsg").style.display="flex";
-  $("distNum").textContent="—"; $("alt").textContent="—"; $("ohead").textContent="—";
-  $("origin").textContent="···"; $("dest").textContent="···";
-  $("airlineName").textContent="—"; $("flightCode").textContent=""; $("craft").textContent=""; setLogo({});
-  updateCompass();
+  const em=$("emptyMsg"); if(em) em.style.display="block";
+  const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
+  set("distNum","—"); set("alt","—"); set("ohead","—"); set("origin","···"); set("dest","···");
+  set("airlineName","—"); set("flightCode",""); set("craft","");
+  setLogo({}); updateCompass();
+}
+function repaint(){ if(state.current) render(state.current.plane); else showEmpty(); updateFooter(); }
+
+/* ---- build board ---- */
+function buildBoard(){
+  const board=$("board"); const port=isPortrait();
+  board.className="board "+(port?"port":"land");
+  board.innerHTML="";
+  for(const t of cfg()){ if(!t.on) continue;
+    const cell=document.createElement("div"); cell.className="cell"; cell.dataset.tile=t.id;
+    const w=Math.min(t.w, port?2:4);
+    cell.style.gridColumn="span "+w; cell.style.gridRow="span "+t.h;
+    cell.innerHTML=TILE_HTML[t.id]; board.appendChild(cell);
+  }
+  repaint(); updateClock(); setTimeout(refit,0);
 }
 
+/* ---- data fetch ---- */
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-/* try direct first; fall back to the relay if the browser blocks it */
 async function getJSON(url){
-  if(state.directOK!==false){
-    try{ const r=await fetch(url,{cache:"no-store"}); if(r.ok){ state.directOK=true; state.via="direct"; return await r.json(); } }
-    catch(_){ state.directOK=false; }
-  }
-  if(state.proxy){
-    try{ const r=await fetch(state.proxy+encodeURIComponent(url),{cache:"no-store"}); if(r.ok){ state.via="relay"; return await r.json(); } }catch(_){}
-  }
+  if(state.directOK!==false){ try{ const r=await fetch(url,{cache:"no-store"}); if(r.ok){ state.directOK=true; state.via="direct"; return await r.json(); } }catch(_){ state.directOK=false; } }
+  if(state.proxy){ try{ const r=await fetch(state.proxy+encodeURIComponent(url),{cache:"no-store"}); if(r.ok){ state.via="relay"; return await r.json(); } }catch(_){} }
   throw new Error("blocked");
 }
 async function fetchLive(){
@@ -377,8 +392,7 @@ async function fetchLive(){
     const d=slantFeet({lat:a.lat,lon:a.lon,altFt}); if(d<=state.rangeFt && d<bd){ bd=d; best={a,altFt}; } }
   if(!best) return null;
   const a=best.a, plane={callsign:(a.flight||"").trim(),lat:a.lat,lon:a.lon,altFt:best.altFt,
-    track:(typeof a.track==="number"?a.track:null),cat:a.category,type:(a.t||"").toString(),
-    desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString()};
+    track:(typeof a.track==="number"?a.track:null),cat:a.category,type:(a.t||"").toString(),desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString()};
   if(plane.callsign){ try{ await sleep(1100);
     const j=await getJSON(`https://api.adsbdb.com/v0/callsign/${encodeURIComponent(plane.callsign)}`);
     const fr=j?.response?.flightroute; if(fr){
@@ -388,7 +402,6 @@ async function fetchLive(){
     }}catch(_){}}
   return plane;
 }
-
 const SAMPLE=[
   {callsign:"N512TC",manufacturer:"Cessna",desc:"Cessna 172",type:"C172",cat:"A1",track:270,altFt:1100,offLat:.004,offLon:.004},
   {callsign:"SWA2347",airlineName:"Southwest",airlineIata:"WN",desc:"Boeing 737-700",type:"B737",cat:"A3",track:320,originIata:"LAX",originName:"Los Angeles Intl",originCity:"Los Angeles",destIata:"SJC",destName:"San José Mineta Intl",destCity:"San José",altFt:3200,offLat:.012,offLon:.012},
@@ -405,47 +418,98 @@ async function tick(){
     if(state.mode==="starting") setStatus("starting","Checking overhead…");
     const live=await fetchLive();
     const tag=state.via==="relay"?"Live · relayed":"Live signal";
-    if(live){ setStatus("live",tag); render(live); } else { setStatus("live",(state.via==="relay"?"No aircraft in range · relayed":"No aircraft in range")); showEmpty(); }
+    if(live){ setStatus("live",tag); render(live); } else { setStatus("live",state.via==="relay"?"No aircraft in range · relayed":"No aircraft in range"); showEmpty(); }
   }catch(_){
     const inr=sampleInRange();
-    const why = state.proxy ? "live feed unreachable" : "add a relay in settings for live data";
+    const why=state.proxy?"live feed unreachable":"add a relay in settings for live data";
     if(inr.length){ setStatus("sim","Sample data — "+why); render(inr[si++%inr.length]); }
     else { setStatus("sim","Sample data — nothing within range"); showEmpty(); }
   }
 }
 function startLoop(){ if(timer) clearInterval(timer); tick(); timer=setInterval(tick,9000); }
 
+/* ---- clock ---- */
+function updateClock(){
+  const now=new Date(), t=now.toLocaleTimeString("en-US",{hour12:false,hour:"2-digit",minute:"2-digit"});
+  const hc=$("hdrClock"); if(hc) hc.textContent=t;
+  const c=$("clock"); if(c) c.textContent=t;
+  const cd=$("clockDate"); if(cd) cd.textContent=now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+
+/* ---- wake lock ---- */
 let wakeLock=null;
 async function keepAwake(){ try{ if("wakeLock" in navigator) wakeLock=await navigator.wakeLock.request("screen"); }catch(_){} }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
 
+/* ---- dim ---- */
 function applyDim(){ $("dim").classList.toggle("on",state.dim); $("dimBtn").classList.toggle("on",state.dim); }
 $("dimBtn").onclick=()=>{ state.dim=!state.dim; applyDim(); store.set("dim",state.dim); };
 
-function openSheet(){ $("latIn").value=state.lat.toFixed(4); $("lonIn").value=state.lon.toFixed(4);
+/* ---- settings sheet ---- */
+let sheetOpen=false;
+document.querySelectorAll(".acc-h").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("open"));
+function openSheet(){
+  $("latIn").value=state.lat.toFixed(4); $("lonIn").value=state.lon.toFixed(4);
   const mi=state.rangeFt/5280; $("rangeIn").value=mi; $("rangeVal").textContent=mi.toFixed(1)+" mi";
-  $("proxyIn").value=state.proxy; $("sheet").classList.add("open"); }
+  $("proxyIn").value=state.proxy; renderLayoutList(); sheetOpen=true; $("sheet").classList.add("open");
+}
 $("setBtn").onclick=openSheet;
-$("closeSheet").onclick=()=>$("sheet").classList.remove("open");
 $("rangeIn").oninput=e=>{ const mi=parseFloat(e.target.value); $("rangeVal").textContent=mi.toFixed(1)+" mi"; state.rangeFt=mi*5280; };
 $("rangeIn").onchange=()=>{ store.set("rangeFt",state.rangeFt); state.displayedDist=null; startLoop(); };
-$("saveLoc").onclick=()=>{
-  const la=parseFloat($("latIn").value),lo=parseFloat($("lonIn").value);
-  if(!isNaN(la)&&!isNaN(lo)){ state.lat=la; state.lon=lo; store.set("lat",la); store.set("lon",lo); }
-  const px=$("proxyIn").value.trim(); state.proxy=px; store.set("proxy",px); state.directOK=null;
-  store.set("rangeFt",state.rangeFt);
-  state.displayedDist=null; $("sheet").classList.remove("open"); startLoop();
-};
 $("gpsBtn").onclick=()=>{ if(!navigator.geolocation){ $("gpsBtn").textContent="Type coordinates instead"; return; }
   $("gpsBtn").textContent="Locating…";
   navigator.geolocation.getCurrentPosition(
     p=>{ $("latIn").value=p.coords.latitude.toFixed(4); $("lonIn").value=p.coords.longitude.toFixed(4); $("gpsBtn").textContent="Use my phone's location"; },
     ()=>{ $("gpsBtn").textContent="Couldn't get location — type it in"; },{enableHighAccuracy:true,timeout:8000}); };
+$("saveBtn").onclick=()=>{
+  const la=parseFloat($("latIn").value),lo=parseFloat($("lonIn").value);
+  if(!isNaN(la)&&!isNaN(lo)){ state.lat=la; state.lon=lo; store.set("lat",la); store.set("lon",lo); }
+  const px=$("proxyIn").value.trim(); state.proxy=px; store.set("proxy",px); state.directOK=null;
+  store.set("rangeFt",state.rangeFt);
+  sheetOpen=false; $("sheet").classList.remove("open"); state.displayedDist=null; startLoop();
+};
 
+/* ---- layout manager ---- */
+function renderLayoutList(){
+  const wrap=$("layoutList"); if(!wrap) return;
+  $("layoutOrient").textContent="Editing "+(isPortrait()?"portrait":"landscape")+" layout (rotate the phone to edit the other)";
+  const arr=cfg(); wrap.innerHTML="";
+  arr.forEach((t,i)=>{
+    const row=document.createElement("div"); row.className="lrow";
+    row.innerHTML=`<div class="lmove"><button data-act="up" data-i="${i}">▲</button><button data-act="down" data-i="${i}">▼</button></div>
+      <div class="lname">${TILES[t.id].label}</div>
+      <select class="lsize" data-i="${i}"><option value="1x1">Standard</option><option value="2x1">Wide</option><option value="1x2">Tall</option><option value="2x2">Large</option></select>
+      <label class="lsw"><input type="checkbox" data-i="${i}" ${t.on?"checked":""}><span class="sl"></span></label>`;
+    wrap.appendChild(row);
+    row.querySelector(".lsize").value=t.w+"x"+t.h;
+  });
+}
+function afterLayoutChange(){ store.set("layout",state.layout); buildBoard(); renderLayoutList(); }
+$("layoutList").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-act]"); if(!b) return;
+  const i=+b.dataset.i, arr=cfg();
+  if(b.dataset.act==="up"&&i>0){ const t=arr[i-1]; arr[i-1]=arr[i]; arr[i]=t; }
+  if(b.dataset.act==="down"&&i<arr.length-1){ const t=arr[i+1]; arr[i+1]=arr[i]; arr[i]=t; }
+  afterLayoutChange();
+});
+$("layoutList").addEventListener("change",e=>{
+  const el=e.target, i=+el.dataset.i, arr=cfg(); if(isNaN(i)) return;
+  if(el.classList.contains("lsize")){ const parts=el.value.split("x"); arr[i].w=+parts[0]; arr[i].h=+parts[1]; }
+  else if(el.type==="checkbox"){ arr[i].on=el.checked?1:0; }
+  afterLayoutChange();
+});
+
+/* ---- compass enable on direction tile tap ---- */
+$("board").addEventListener("click",e=>{ if(e.target.closest('[data-tile="direction"]')) requestCompass(); });
+
+/* ---- orientation + resize ---- */
+const mq=window.matchMedia("(orientation:portrait)");
+(mq.addEventListener?mq.addEventListener.bind(mq,"change"):mq.addListener.bind(mq))(()=>{ buildBoard(); if(sheetOpen) renderLayoutList(); });
 window.addEventListener("resize",()=>{ refit(); updateCompass(); });
-window.addEventListener("orientationchange",()=>setTimeout(()=>{ refit(); updateCompass(); },300));
-setInterval(updateFooter,15000);
-applyDim(); startCompass(); keepAwake(); startLoop(); setTimeout(refit,100);
+
+/* ---- go ---- */
+applyDim(); buildBoard(); startCompass(); keepAwake(); startLoop();
+updateClock(); setInterval(updateClock,1000); setInterval(updateFooter,15000);
 </script>
 </body>
 </html>
