@@ -34,7 +34,6 @@
     border:1px solid var(--sep);border-radius:11px;color:var(--label-2);font-size:15px;cursor:pointer;padding:0}
   .iconbtn:active{background:var(--tile)} .iconbtn.on{color:var(--blue);border-color:var(--blue)}
 
-  /* grid board — browser packs the tiles */
   .board{flex:1;display:grid;gap:11px;min-height:0;grid-auto-flow:dense}
   .board.land{grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(0,1fr)}
   .board.port{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(0,1fr)}
@@ -45,8 +44,8 @@
 
   .clk{font-weight:700;line-height:1;font-size:clamp(26px,9vmin,76px)} .clk-d{font-size:11px;color:var(--label-3)}
 
-  .logo{height:min(58%,130px);aspect-ratio:1/1;width:auto;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
-  .logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;padding:11%}
+  .logo{height:min(62%,140px);aspect-ratio:1/1;width:auto;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
+  .logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;padding:8%}
   .logo.fallback{background:var(--tile)}
   .logo .badge{font-weight:700;font-size:clamp(16px,5vmin,30px);color:var(--label-2)}
   .name{font-size:12.5px;font-weight:600;color:var(--label);line-height:1.2}
@@ -89,7 +88,6 @@
   #dim{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:50;transition:opacity .4s ease}
   #dim.on{opacity:.62}
 
-  /* settings sheet */
   #sheet{position:fixed;left:0;right:0;bottom:0;z-index:70;transform:translateY(110%);transition:transform .28s ease;
     background:var(--card);border-top:1px solid var(--sep);border-radius:20px 20px 0 0;max-height:92vh;overflow:auto;
     padding:16px max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
@@ -105,6 +103,7 @@
   .seg .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--label);margin-bottom:4px}
   .seg .lab span{color:var(--blue);font-weight:600}
   .seg .hint{margin:6px 0 0;font-size:11px;color:var(--label-3);line-height:1.4}
+  .hint{font-size:11px;color:var(--label-3);line-height:1.4}
   input[type=range]{width:100%;accent-color:var(--blue);height:30px}
   .frow{display:flex;gap:10px;flex-wrap:wrap}
   .field{flex:1;min-width:120px}
@@ -115,7 +114,10 @@
   .save{margin-top:10px;width:100%;font:inherit;font-size:15px;font-weight:600;border-radius:12px;padding:13px;cursor:pointer;background:var(--blue);color:#fff;border:0}
   .gps:active,.save:active{filter:brightness(1.2)}
 
-  /* layout manager */
+  .segc{display:flex;gap:6px;background:var(--bg);border:1px solid var(--sep);border-radius:11px;padding:4px}
+  .segc button{flex:1;font:inherit;font-size:13px;color:var(--label-2);background:transparent;border:0;border-radius:8px;padding:9px;cursor:pointer}
+  .segc button.on{background:var(--blue);color:#fff;font-weight:600}
+
   .lnote{font-size:11px;color:var(--label-3);margin:0 0 10px}
   .lrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--sep)}
   .lrow:last-child{border-bottom:0}
@@ -159,11 +161,23 @@
   </div>
 
   <div class="acc">
-    <button class="acc-h" type="button">Audible range <span class="chev">▾</span></button>
+    <button class="acc-h" type="button">Display range <span class="chev">▾</span></button>
     <div class="acc-b seg">
-      <div class="lab">Distance <span id="rangeVal">5.0 mi</span></div>
+      <div class="lab">Show within <span id="rangeVal">5.0 mi</span></div>
       <input type="range" id="rangeIn" min="0.5" max="15" step="0.5" value="5" />
-      <p class="hint">Hide aircraft too far to hear. Lower this until only the planes you actually notice remain.</p>
+      <p class="hint">Hide aircraft farther than this. Lower it until only the traffic you care about shows.</p>
+    </div>
+  </div>
+
+  <div class="acc">
+    <button class="acc-h" type="button">Orientation <span class="chev">▾</span></button>
+    <div class="acc-b">
+      <div class="segc" id="orientSeg">
+        <button type="button" data-o="auto">Auto</button>
+        <button type="button" data-o="land">Landscape</button>
+        <button type="button" data-o="port">Portrait</button>
+      </div>
+      <p class="hint">Sets the app's layout. Phones don't let web apps lock physical rotation — for a hard lock, use your phone's rotation lock in Control Center.</p>
     </div>
   </div>
 
@@ -195,7 +209,6 @@
 const store={ get(k,d){ try{ const v=localStorage.getItem("ovh_"+k); return v==null?d:JSON.parse(v); }catch(_){ return d; } },
   set(k,v){ try{ localStorage.setItem("ovh_"+k,JSON.stringify(v)); }catch(_){} } };
 
-/* ---- tiles ---- */
 const TILES={ clock:{label:"Clock"}, logo:{label:"Logo"}, flight:{label:"Flight info"},
   route:{label:"Route"}, distance:{label:"Distance"}, direction:{label:"Direction"}, lastseen:{label:"Last seen"} };
 const DEFAULT_L=[
@@ -211,16 +224,18 @@ const TILE_HTML={
   logo:`<div class="cap">Carrier</div><div class="t-center"><div class="logo fallback" id="logo"><span class="badge">—</span></div><div class="name fade" id="airlineName">—</div></div>`,
   flight:`<div class="cap">Flight</div><div class="t-center"><div class="flightcode tnum fade" id="flightCode">—</div><div class="craft fade" id="craft"></div></div>`,
   route:`<div class="cap" style="position:absolute;top:0;left:0">Route</div><div class="route-body"><div class="codes fade" id="codes"><span class="code" id="origin">···</span><span class="arrow">→</span><span class="code" id="dest">···</span></div><div class="ends fade" id="ends"><div><span id="originName">—</span><span class="city" id="originCity"></span></div><div><span id="destName">—</span><span class="city" id="destCity"></span></div></div></div>`,
-  distance:`<div class="cap">Distance to you</div><div class="big"><span class="num tnum" id="distNum">—</span><span class="unit">feet away</span></div><div class="sub"><div><div class="k">Altitude</div><div class="v tnum" id="alt">—</div></div><div><div class="k">Overhead</div><div class="v tnum" id="ohead">—</div></div></div><div class="empty" id="emptyMsg" style="display:none">Listening for aircraft…</div>`,
+  distance:`<div class="cap">Distance to you</div><div class="big"><span class="num tnum" id="distNum">—</span><span class="unit" id="distUnit">feet away</span></div><div class="sub"><div><div class="k">Altitude</div><div class="v tnum" id="alt">—</div></div><div><div class="k">Overhead</div><div class="v tnum" id="ohead">—</div></div></div><div class="empty" id="emptyMsg" style="display:none">No aircraft in range</div>`,
   direction:`<div class="cap">Direction</div><div class="dial"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="ringbg"/><g id="ring"><line class="tick major" x1="50" y1="6" x2="50" y2="12"/><line class="tick" x1="94" y1="50" x2="88" y2="50"/><line class="tick" x1="50" y1="94" x2="50" y2="88"/><line class="tick" x1="6" y1="50" x2="12" y2="50"/><text class="card cardN" x="50" y="17" text-anchor="middle" dominant-baseline="central">N</text><text class="card" x="85" y="50" text-anchor="middle" dominant-baseline="central">E</text><text class="card" x="50" y="83" text-anchor="middle" dominant-baseline="central">S</text><text class="card" x="15" y="50" text-anchor="middle" dominant-baseline="central">W</text></g><line id="guide" class="guide" x1="50" y1="50" x2="50" y2="16"/><g id="planeMarker" style="display:none"><path class="sprite" d="M0,-6.5 L1.4,-1.5 L6,1.5 L6,2.8 L1.4,1.2 L1.2,4.5 L2.6,6 L2.6,6.8 L0,5.9 L-2.6,6.8 L-2.6,6 L-1.2,4.5 L-1.4,1.2 L-6,2.8 L-6,1.5 L-1.4,-1.5 Z"/></g><circle cx="50" cy="50" r="2" class="hub"/></svg><div class="dirhint" id="dirHint"></div></div><div class="dirlabel" id="dirLabel"></div>`,
   lastseen:`<div class="cap">Last seen</div><div class="t-center"><div class="last-txt" id="lastSeen">—</div></div>`
 };
 
-/* ---- state ---- */
+const ALT_FLOOR=50; /* feet — exclude aircraft below this, and exclude unknown altitude */
+
 const state={ lat:37.468, lon:-122.141, mode:"starting", displayedDist:null, dim:false,
-  rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null, layout:null };
+  rangeFt:5*5280, proxy:"", directOK:null, via:"", current:null, last:null, layout:null, orient:"auto" };
 state.lat=store.get("lat",state.lat); state.lon=store.get("lon",state.lon);
 state.rangeFt=store.get("rangeFt",state.rangeFt); state.proxy=store.get("proxy",""); state.dim=store.get("dim",false);
+state.orient=store.get("orient","auto");
 
 function reconcileLayout(saved){
   const def={l:DEFAULT_L,p:DEFAULT_P}, out={};
@@ -237,9 +252,9 @@ state.layout=reconcileLayout(store.get("layout",null));
 const $=id=>document.getElementById(id);
 const FT_PER_M=3.280839895, D2R=Math.PI/180;
 const isPortrait=()=>window.matchMedia("(orientation:portrait)").matches;
-const cfg=()=>state.layout[isPortrait()?"p":"l"];
+function layoutKey(){ return state.orient==="land"?"l":state.orient==="port"?"p":(isPortrait()?"p":"l"); }
+const cfg=()=>state.layout[layoutKey()];
 
-/* ---- geometry ---- */
 function haversineMeters(aLat,aLon,bLat,bLon){
   const R=6371000,dLat=(bLat-aLat)*D2R,dLon=(bLon-aLon)*D2R;
   const s=Math.sin(dLat/2)**2+Math.cos(aLat*D2R)*Math.cos(bLat*D2R)*Math.sin(dLon/2)**2;
@@ -260,7 +275,6 @@ function relTime(ms){ const s=(Date.now()-ms)/1000;
   if(s<12) return "just now"; if(s<60) return Math.round(s)+"s ago";
   if(s<3600) return Math.round(s/60)+" min ago"; return Math.round(s/3600)+"h ago"; }
 
-/* ---- text fit ---- */
 function fitText(el,available,maxPx){ if(!el)return; el.style.fontSize=maxPx+"px"; let size=maxPx,g=0;
   while(el.scrollWidth>available && size>11 && g<80){ size-=1; el.style.fontSize=size+"px"; g++; } }
 function refit(){
@@ -269,7 +283,6 @@ function refit(){
 }
 function softSet(el,write){ if(!el){return;} el.classList.add("fading"); setTimeout(()=>{ write(); el.classList.remove("fading"); refit(); },180); }
 
-/* ---- status ---- */
 function setStatus(mode,text){ state.mode=mode;
   $("statusDot").className="dot"+(mode==="live"?" live":mode==="sim"?" sim":mode==="error"?" err":"");
   $("statusText").textContent=text; }
@@ -286,7 +299,6 @@ function craftLabel(p){
   return p.desc||p.type||"";
 }
 
-/* ---- compass ---- */
 let heading=0, haveCompass=false, needsTap=false, pendingFrame=false;
 function screenAngle(){ try{ if(screen.orientation&&typeof screen.orientation.angle==="number") return screen.orientation.angle; }catch(_){}
   return (typeof window.orientation==="number")?window.orientation:0; }
@@ -323,12 +335,18 @@ function requestCompass(){
   }
 }
 
-/* ---- render data ---- */
-function animateDistance(target){ const dn=$("distNum"); if(!dn) return; dn.textContent=commas(target); refit();
-  const start=state.displayedDist==null?target:state.displayedDist,t0=performance.now(),dur=600;
+/* distance: miles (2 sig figs) at >=1mi, feet under 1mi; count-up only in feet */
+function sig2(x){ return x.toPrecision(2); }
+function animateFeet(target){ const dn=$("distNum"); if(!dn) return;
+  const start=(state.displayedDist==null||state.displayedDist>=5280)?target:state.displayedDist,t0=performance.now(),dur=600;
   function step(now){ const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3),v=start+(target-start)*e;
-    dn.textContent=commas(v); if(k<1) requestAnimationFrame(step); else state.displayedDist=target; }
+    dn.textContent=commas(Math.round(v/10)*10); if(k<1) requestAnimationFrame(step); else state.displayedDist=target; }
   requestAnimationFrame(step);
+}
+function showDistance(ft){ const dn=$("distNum"),un=$("distUnit"); if(!dn) return;
+  if(ft>=5280){ dn.textContent=sig2(ft/5280); if(un) un.textContent="miles away"; state.displayedDist=ft; }
+  else { if(un) un.textContent="feet away"; animateFeet(ft); }
+  refit();
 }
 function updateFooter(){ const el=$("lastSeen"); if(!el) return; const l=state.last;
   if(!l){ el.textContent="—"; return; } const p=l.plane;
@@ -347,7 +365,7 @@ function render(p){
   softSet($("codes"),()=>{ const o=$("origin"),d=$("dest"); if(o)o.textContent=p.originIata||"???"; if(d)d.textContent=p.destIata||"???"; });
   softSet($("ends"),()=>{ const a=$("originName"),b=$("destName"),c=$("originCity"),e=$("destCity");
     if(a)a.textContent=p.originName||(p.originIata?"":"Route unavailable"); if(b)b.textContent=p.destName||""; if(c)c.textContent=p.originCity||""; if(e)e.textContent=p.destCity||""; });
-  animateDistance(slantFeet(p));
+  showDistance(slantFeet(p));
   const al=$("alt"); if(al) al.textContent=p.altFt?commas(p.altFt)+" ft":"—";
   const oh=$("ohead"); if(oh){ const g=groundFeet(p); if(g<3000){ oh.textContent="YES"; oh.classList.add("overhead"); } else { oh.textContent=(g/5280).toFixed(1)+" mi"; oh.classList.remove("overhead"); } }
   updateCompass();
@@ -356,15 +374,14 @@ function showEmpty(){
   state.current=null;
   const em=$("emptyMsg"); if(em) em.style.display="block";
   const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
-  set("distNum","—"); set("alt","—"); set("ohead","—"); set("origin","···"); set("dest","···");
+  set("distNum","—"); set("distUnit",""); set("alt","—"); set("ohead","—"); set("origin","···"); set("dest","···");
   set("airlineName","—"); set("flightCode",""); set("craft","");
   setLogo({}); updateCompass();
 }
 function repaint(){ if(state.current) render(state.current.plane); else showEmpty(); updateFooter(); }
 
-/* ---- build board ---- */
 function buildBoard(){
-  const board=$("board"); const port=isPortrait();
+  const board=$("board"); const port=layoutKey()==="p";
   board.className="board "+(port?"port":"land");
   board.innerHTML="";
   for(const t of cfg()){ if(!t.on) continue;
@@ -376,7 +393,6 @@ function buildBoard(){
   repaint(); updateClock(); setTimeout(refit,0);
 }
 
-/* ---- data fetch ---- */
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function getJSON(url){
   if(state.directOK!==false){ try{ const r=await fetch(url,{cache:"no-store"}); if(r.ok){ state.directOK=true; state.via="direct"; return await r.json(); } }catch(_){ state.directOK=false; } }
@@ -388,8 +404,12 @@ async function fetchLive(){
   const data=await getJSON(`https://api.airplanes.live/v2/point/${state.lat}/${state.lon}/${nm}`);
   const list=(data.ac||[]).filter(a=>typeof a.lat==="number"&&typeof a.lon==="number");
   let best=null,bd=Infinity;
-  for(const a of list){ const altFt=a.alt_baro==="ground"?0:(Number(a.alt_baro)||0);
-    const d=slantFeet({lat:a.lat,lon:a.lon,altFt}); if(d<=state.rangeFt && d<bd){ bd=d; best={a,altFt}; } }
+  for(const a of list){
+    if(a.alt_baro==="ground") continue;
+    let altFt=Number(a.alt_baro); if(!Number.isFinite(altFt)) altFt=Number(a.alt_geom);
+    if(!Number.isFinite(altFt)||altFt<ALT_FLOOR) continue;
+    const d=slantFeet({lat:a.lat,lon:a.lon,altFt}); if(d<=state.rangeFt && d<bd){ bd=d; best={a,altFt}; }
+  }
   if(!best) return null;
   const a=best.a, plane={callsign:(a.flight||"").trim(),lat:a.lat,lon:a.lon,altFt:best.altFt,
     track:(typeof a.track==="number"?a.track:null),cat:a.category,type:(a.t||"").toString(),desc:(a.desc||"").toString(),manufacturer:(a.desc||a.t||"").toString()};
@@ -410,7 +430,8 @@ const SAMPLE=[
   {callsign:"ACA793",airlineName:"Air Canada",airlineIata:"AC",desc:"Airbus A321",type:"A321",cat:"A3",track:150,originIata:"SEA",originName:"Seattle-Tacoma",originCity:"Seattle",destIata:"LAX",destName:"Los Angeles Intl",destCity:"Los Angeles",altFt:33000,offLat:.002,offLon:.002}
 ];
 let si=0;
-function sampleInRange(){ return SAMPLE.map(s=>Object.assign({},s,{lat:state.lat+s.offLat,lon:state.lon+s.offLon})).filter(p=>slantFeet(p)<=state.rangeFt); }
+function sampleInRange(){ return SAMPLE.map(s=>Object.assign({},s,{lat:state.lat+s.offLat,lon:state.lon+s.offLon}))
+  .filter(p=>p.altFt>=ALT_FLOOR && slantFeet(p)<=state.rangeFt); }
 
 let timer=null;
 async function tick(){
@@ -426,9 +447,14 @@ async function tick(){
     else { setStatus("sim","Sample data — nothing within range"); showEmpty(); }
   }
 }
-function startLoop(){ if(timer) clearInterval(timer); tick(); timer=setInterval(tick,9000); }
+function nextDelay(){
+  if(state.current && state.current.plane){ const ft=slantFeet(state.current.plane);
+    if(ft<5280) return 4000; if(ft<5*5280) return 7000; return 10000; }
+  return 12000;
+}
+async function runCycle(){ await tick(); timer=setTimeout(runCycle,nextDelay()); }
+function startLoop(){ if(timer) clearTimeout(timer); runCycle(); }
 
-/* ---- clock ---- */
 function updateClock(){
   const now=new Date(), t=now.toLocaleTimeString("en-US",{hour12:false,hour:"2-digit",minute:"2-digit"});
   const hc=$("hdrClock"); if(hc) hc.textContent=t;
@@ -436,22 +462,21 @@ function updateClock(){
   const cd=$("clockDate"); if(cd) cd.textContent=now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
 }
 
-/* ---- wake lock ---- */
 let wakeLock=null;
 async function keepAwake(){ try{ if("wakeLock" in navigator) wakeLock=await navigator.wakeLock.request("screen"); }catch(_){} }
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") keepAwake(); });
 
-/* ---- dim ---- */
 function applyDim(){ $("dim").classList.toggle("on",state.dim); $("dimBtn").classList.toggle("on",state.dim); }
 $("dimBtn").onclick=()=>{ state.dim=!state.dim; applyDim(); store.set("dim",state.dim); };
 
-/* ---- settings sheet ---- */
 let sheetOpen=false;
 document.querySelectorAll(".acc-h").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("open"));
 function openSheet(){
   $("latIn").value=state.lat.toFixed(4); $("lonIn").value=state.lon.toFixed(4);
   const mi=state.rangeFt/5280; $("rangeIn").value=mi; $("rangeVal").textContent=mi.toFixed(1)+" mi";
-  $("proxyIn").value=state.proxy; renderLayoutList(); sheetOpen=true; $("sheet").classList.add("open");
+  $("proxyIn").value=state.proxy;
+  document.querySelectorAll("#orientSeg button").forEach(b=>b.classList.toggle("on",b.dataset.o===state.orient));
+  renderLayoutList(); sheetOpen=true; $("sheet").classList.add("open");
 }
 $("setBtn").onclick=openSheet;
 $("rangeIn").oninput=e=>{ const mi=parseFloat(e.target.value); $("rangeVal").textContent=mi.toFixed(1)+" mi"; state.rangeFt=mi*5280; };
@@ -469,10 +494,18 @@ $("saveBtn").onclick=()=>{
   sheetOpen=false; $("sheet").classList.remove("open"); state.displayedDist=null; startLoop();
 };
 
-/* ---- layout manager ---- */
+$("orientSeg").addEventListener("click",e=>{ const b=e.target.closest("button[data-o]"); if(!b) return;
+  state.orient=b.dataset.o; store.set("orient",state.orient);
+  document.querySelectorAll("#orientSeg button").forEach(x=>x.classList.toggle("on",x===b));
+  buildBoard(); renderLayoutList();
+});
+
 function renderLayoutList(){
   const wrap=$("layoutList"); if(!wrap) return;
-  $("layoutOrient").textContent="Editing "+(isPortrait()?"portrait":"landscape")+" layout (rotate the phone to edit the other)";
+  const key=layoutKey(), name=key==="p"?"portrait":"landscape";
+  $("layoutOrient").textContent = state.orient==="auto"
+    ? "Editing "+name+" layout (rotate the phone to edit the other)"
+    : "Editing "+name+" layout (orientation locked to "+name+")";
   const arr=cfg(); wrap.innerHTML="";
   arr.forEach((t,i)=>{
     const row=document.createElement("div"); row.className="lrow";
@@ -499,15 +532,12 @@ $("layoutList").addEventListener("change",e=>{
   afterLayoutChange();
 });
 
-/* ---- compass enable on direction tile tap ---- */
 $("board").addEventListener("click",e=>{ if(e.target.closest('[data-tile="direction"]')) requestCompass(); });
 
-/* ---- orientation + resize ---- */
 const mq=window.matchMedia("(orientation:portrait)");
 (mq.addEventListener?mq.addEventListener.bind(mq,"change"):mq.addListener.bind(mq))(()=>{ buildBoard(); if(sheetOpen) renderLayoutList(); });
 window.addEventListener("resize",()=>{ refit(); updateCompass(); });
 
-/* ---- go ---- */
 applyDim(); buildBoard(); startCompass(); keepAwake(); startLoop();
 updateClock(); setInterval(updateClock,1000); setInterval(updateFooter,15000);
 </script>
